@@ -12,101 +12,42 @@
             background-color: #f9f9f9;
         }
 
-        /* --- ヘッダー --- */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 40px; /* パディングを少し広げます */
-            border-bottom: 1px solid #ddd;
-            background-color: #ffffff;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .header-left, .header-right {
-            display: flex;
-            align-items: center;
-            flex: 1;
-        }
-        .header-right {
-            justify-content: flex-end;
-        }
-        .header-center {
-            display: flex;
-            justify-content: center;
-            flex: 1;
-        }
-        .header-logo img {
-            height: 40px;
-            width: auto;
-        }
-        .nav-list {
-            list-style: none;
-            display: flex;
-            margin: 0;
-            padding: 0;
-        }
-        .nav-item {
-            margin: 0 15px;
-        }
-        .nav-link {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .nav-link:hover {
-            color: #007bff;
-        }
-        .language-select {
-            margin-right: 20px;
-            font-weight: 500;
-        }
-        .login-button {
-            padding: 8px 16px;
-            border: 1px solid #333;
-            border-radius: 5px;
-            background-color: white;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .login-button:hover {
-            background-color: #333;
-            color: #fff;
-        }
+        /* ヘッダー */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; border-bottom: 1px solid #ddd; background-color: #ffffff; position: sticky; top: 0; z-index: 100; }
+        .header-left, .header-right { display: flex; align-items: center; flex: 1; }
+        .header-right { justify-content: flex-end; }
+        .header-center { display: flex; justify-content: center; flex: 1; }
+        .header-logo img { height: 40px; width: auto; }
+        .nav-list { list-style: none; display: flex; margin: 0; padding: 0; }
+        .nav-item { margin: 0 15px; }
+        .nav-link { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s ease; }
+        .nav-link:hover { color: #007bff; }
+        .language-select { margin-right: 20px; font-weight: 500; }
+        .login-button { padding: 8px 16px; border: 1px solid #333; border-radius: 5px; background-color: white; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .login-button:hover { background-color: #333; color: #fff; }
         
-        /* --- 機能紹介セクション --- */
-        main {
-            padding: 50px 40px;
-        }
+        /* 機能紹介セクション */
+        main { padding: 50px 40px; }
+        .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 2つのカラムを作成 */
-            gap: 40px; /* カラム間の余白 */
-        }
-
+        /* 全カード共通スタイル */
         .feature-card {
             position: relative;
-            height: 60vh; /* ビューポートの高さの60% */
+            height: 60vh;
             border-radius: 12px;
-            overflow: hidden; /* 角丸を有効にするため */
+            overflow: hidden;
             display: flex;
-            align-items: flex-end; /* テキストを下に配置 */
+            align-items: flex-end;
             padding: 40px;
             text-decoration: none;
             color: white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
-
         .feature-card:hover {
-            transform: translateY(-10px); /* ホバー時に少し浮き上がる動き */
+            transform: translateY(-10px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
-
         .feature-card::before {
             content: '';
             position: absolute;
@@ -114,47 +55,59 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0) 40%); /* 下から上への黒いグラデーション */
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0) 50%);
             z-index: 1;
         }
-        
-        .feature-card-content {
-            position: relative;
-            z-index: 2;
-        }
+        .feature-card-content { position: relative; z-index: 2; }
+        .feature-card h2 { font-size: 36px; margin: 0 0 10px 0; }
+        .feature-card p { font-size: 18px; margin: 0 0 20px 0; max-width: 450px; }
+        .feature-card .cta-arrow { font-size: 24px; font-weight: bold; transition: transform 0.3s ease; }
+        .feature-card:hover .cta-arrow { transform: translateX(10px); }
 
-        .feature-card h2 {
-            font-size: 36px;
-            margin: 0 0 10px 0;
-        }
-
-        .feature-card p {
-            font-size: 18px;
-            margin: 0 0 20px 0;
-            max-width: 450px;
-        }
-
-        .feature-card .cta-arrow {
-            font-size: 24px;
-            font-weight: bold;
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover .cta-arrow {
-            transform: translateX(10px); /* ホバー時に矢印が動く */
-        }
-        
-        /* カードごとの背景画像【★★ここを更新しました★★】*/
+        /* 旅程作成カード */
         #itinerary-card {
             background-image: url('https://raw.githubusercontent.com/osamu0221/yourlocals/main/22944357_s.jpg');
             background-size: cover;
             background-position: center;
         }
 
+        /* 記事カード */
         #article-card {
             background-image: url('https://raw.githubusercontent.com/osamu0221/yourlocals/main/24437535_s.jpg');
             background-size: cover;
             background-position: center;
+            overflow: visible;
+        }
+        
+        .article-screenshot {
+            position: absolute;
+            width: 70%;
+            height: auto;
+            border-radius: 8px;
+            border: 3px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            z-index: 3;
+            transition: transform 0.4s ease;
+        }
+
+        #ss1 {
+            top: -40px;
+            right: -20px;
+            transform: rotate(8deg);
+        }
+
+        #ss2 {
+            top: 20px;
+            right: 30px;
+            transform: rotate(-4deg);
+            z-index: 4;
+        }
+        
+        #article-card:hover #ss1 {
+            transform: rotate(4deg) translateY(-10px) translateX(-5px);
+        }
+        #article-card:hover #ss2 {
+            transform: rotate(-2deg) translateY(-5px) translateX(5px);
         }
 
     </style>
@@ -162,24 +115,9 @@
 <body>
 
     <header class="header">
-        <div class="header-left">
-            <ul class="nav-list">
-                <li class="nav-item"><a href="#itinerary-card" class="nav-link">Itinerary creation</a></li>
-                <li class="nav-item"><a href="#article-card" class="nav-link">Article</a></li>
-            </ul>
-        </div>
-        <div class="header-center">
-            <a href="/" class="header-logo">
-                <img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-07-03%20134309.png" alt="YOUR LOCALS Logo">
-            </a>
-        </div>
-        <div class="header-right">
-            <ul class="nav-list">
-                <li class="nav-item"><a href="/about" class="nav-link">About us</a></li>
-            </ul>
-            <div class="language-select">Language</div>
-            <button class="login-button">Login</button>
-        </div>
+        <div class="header-left"><ul class="nav-list"><li class="nav-item"><a href="#itinerary-card" class="nav-link">Itinerary creation</a></li><li class="nav-item"><a href="#article-card" class="nav-link">Article</a></li></ul></div>
+        <div class="header-center"><a href="/" class="header-logo"><img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-07-03%20134309.png" alt="YOUR LOCALS Logo"></a></div>
+        <div class="header-right"><ul class="nav-list"><li class="nav-item"><a href="/about" class="nav-link">About us</a></li></ul><div class="language-select">Language</div><button class="login-button">Login</button></div>
     </header>
 
     <main>
@@ -193,6 +131,9 @@
             </a>
 
             <a href="/articles-page" class="feature-card" id="article-card">
+                
+                <img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-07-03%20141558.png" alt="記事のスクリーンショット1" class="article-screenshot" id="ss2">
+                <img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-07-03%20141451.png" alt="記事のスクリーンショット2" class="article-screenshot" id="ss1">
                 <div class="feature-card-content">
                     <h2>Discover Real Japan</h2>
                     <p>Read our stories and tips to experience the culture and hidden gems loved by locals.</p>

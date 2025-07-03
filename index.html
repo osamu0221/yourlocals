@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOUR LOCALS</title>
+    <style>
+        /* 基本的なスタイリング */
+        body {
+            font-family: sans-serif;
+            margin: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .header-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header-nav {
+            display: flex;
+            align-items: center;
+        }
+        .nav-list {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-item {
+            margin: 0 15px;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+        }
+        .language-select {
+            margin-right: 20px;
+            /* お好みでアイコンなどを追加 */
+        }
+        .login-button {
+            padding: 8px 16px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-logo">
+            [cite_start]<a href="/" class="nav-link">YOUR LOCALS</a> [cite: 3]
+        </div>
+        <nav class="header-nav">
+            <ul class="nav-list">
+                [cite_start]<li class="nav-item"><a href="/itinerary" class="nav-link">Itinerary creation</a></li> [cite: 1, 4]
+                [cite_start]<li class="nav-item"><a href="/article" class="nav-link">Article</a></li> [cite: 1, 5]
+                [cite_start]<li class="nav-item"><a href="/about" class="nav-link">About us</a></li> [cite: 6]
+            </ul>
+            <div class="language-select">
+                [cite_start]Language [cite: 2]
+                </div>
+            [cite_start]<button class="login-button">Login</button> [cite: 2]
+        </nav>
+    </header>
+
+</body>
+</html>

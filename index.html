@@ -17,9 +17,11 @@
             padding: 10px 20px;
             border-bottom: 1px solid #ddd;
         }
-        .header-logo {
+        .header-logo a {
             font-size: 24px;
             font-weight: bold;
+            text-decoration: none;
+            color: #333;
         }
         .header-nav {
             display: flex;
@@ -40,7 +42,6 @@
         }
         .language-select {
             margin-right: 20px;
-            /* お好みでアイコンなどを追加 */
         }
         .login-button {
             padding: 8px 16px;
@@ -55,18 +56,18 @@
 
     <header class="header">
         <div class="header-logo">
-            [cite_start]<a href="/" class="nav-link">YOUR LOCALS</a> [cite: 3]
+            <a href="/">YOUR LOCALS</a>
         </div>
         <nav class="header-nav">
             <ul class="nav-list">
-                [cite_start]<li class="nav-item"><a href="/itinerary" class="nav-link">Itinerary creation</a></li> [cite: 1, 4]
-                [cite_start]<li class="nav-item"><a href="/article" class="nav-link">Article</a></li> [cite: 1, 5]
-                [cite_start]<li class="nav-item"><a href="/about" class="nav-link">About us</a></li> [cite: 6]
+                <li class="nav-item"><a href="/itinerary" class="nav-link">Itinerary creation</a></li>
+                <li class="nav-item"><a href="/article" class="nav-link">Article</a></li>
+                <li class="nav-item"><a href="/about" class="nav-link">About us</a></li>
             </ul>
             <div class="language-select">
-                [cite_start]Language [cite: 2]
-                </div>
-            [cite_start]<button class="login-button">Login</button> [cite: 2]
+                Language
+            </div>
+            <button class="login-button">Login</button>
         </nav>
     </header>
 

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itinerary Builder - YOUR LOCALS</title>
+    <style>
+        /* --- 基本スタイル --- */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .disabled-section { opacity: 0.4; pointer-events: none; transition: opacity 0.5s ease; }
+
+        /* --- ヘッダー（他ページと共通の仮スタイル） --- */
+        .header { padding: 10px 20px; border-bottom: 1px solid #ddd; background-color: #fff; text-align: center; font-size: 1.5em; font-weight: bold; }
+
+        /* --- 1. 出発地点選択 --- */
+        .start-point-section { text-align: center; padding: 20px; background-color: #fff; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .start-point-section h2 { margin-top: 0; font-size: 1.2em; color: #555; }
+        .start-point-buttons button { font-size: 1em; padding: 10px 20px; margin: 5px; border: 2px solid transparent; background-color: #e9ecef; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .start-point-buttons button:hover { background-color: #ced4da; }
+        .start-point-buttons button.active { background-color: #007bff; color: white; border-color: #0056b3; }
+
+        /* --- 2. タグフィルター --- */
+        .tag-filter-section { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; background-color: #fff; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .tag-filter-section .tag { font-size: 0.9em; padding: 8px 15px; border-radius: 20px; background-color: #f1f3f5; cursor: pointer; transition: all 0.2s ease; user-select: none; }
+        .tag-filter-section .tag:hover { background-color: #e9ecef; }
+        .tag-filter-section .tag.active { background-color: #fd7e14; color: white; }
+
+        /* --- 3. 施設一覧 --- */
+        .facility-list-section { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .facility-card { background-color: #fff; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: grab; transition: box-shadow 0.2s ease; }
+        .facility-card:active { cursor: grabbing; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .facility-card h3 { margin: 0 0 10px 0; font-size: 1.2em; }
+        .facility-card .info { color: #555; font-size: 0.9em; }
+
+        /* --- 4. タイムラインバー --- */
+        .timeline-builder-section { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #e9ecef; padding: 15px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 100; }
+        .time-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 20px; }
+        .time-control { display: flex; align-items: center; gap: 10px; }
+        .time-control span { font-size: 1.2em; font-weight: bold; }
+        .time-control button { font-size: 1.5em; width: 30px; height: 30px; border: none; background-color: #ced4da; border-radius: 50%; cursor: pointer; }
+        
+        .timeline-bar-wrapper { padding: 10px 0; }
+        #timeline-bar { display: flex; height: 60px; background-color: #adb5bd; border-radius: 8px; overflow: hidden; }
+        
+        .timeline-item { display: flex; justify-content: center; align-items: center; padding: 0 10px; color: white; font-size: 0.9em; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .timeline-item.facility { background-color: #28a745; }
+        .timeline-item.travel { background-color: #6c757d; font-size: 0.8em; }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">YOUR LOCALS - Itinerary Builder</header>
+
+    <div class="container">
+        <section class="start-point-section">
+            <h2>Where will you start your tour?</h2>
+            <div class="start-point-buttons">
+                <button data-station="shin-osaka">Shin-Osaka Station</button>
+                <button data-station="osaka-umeda">Osaka/Umeda Station</button>
+                <button data-station="kix">Kansai International Airport</button>
+                <button data-station="namba">Namba Station</button>
+                <button data-station="tennoji">Tennoji Station</button>
+            </div>
+        </section>
+
+        <div id="main-content" class="disabled-section">
+            <section class="tag-filter-section" id="tag-filters">
+                </section>
+
+            <main class="facility-list-section" id="facility-list">
+                </main>
+        </div>
+    </div>
+    
+    <section id="timeline-section" class="timeline-builder-section disabled-section">
+        <div class="time-controls">
+            <div class="time-control" id="start-time-control">
+                <button class="time-adjust" data-type="start" data-change="-15">-</button>
+                <span>Start: <span id="start-time-display">09:00</span></span>
+                <button class="time-adjust" data-type="start" data-change="15">+</button>
+            </div>
+            <div class="time-control" id="end-time-control">
+                <button class="time-adjust" data-type="end" data-change="-15">-</button>
+                <span>End: <span id="end-time-display">18:00</span></span>
+                <button class="time-adjust" data-type="end" data-change="15">+</button>
+            </div>
+        </div>
+        <div class="timeline-bar-wrapper">
+            <div id="timeline-bar">
+                </div>
+        </div>
+    </section>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- データ（仮） ---
+        const allFacilities = [
+            { id: 1, name: 'Osaka Castle', duration: 90, station: 'osaka-castle', tags: ['history', 'sightseeing'], distance: { 'shin-osaka': 25, 'osaka-umeda': 15, 'kix': 60, 'namba': 20, 'tennoji': 10 } },
+            { id: 2, name: 'Dotonbori', duration: 120, station: 'namba', tags: ['food', 'nightlife', 'shopping'], distance: { 'shin-osaka': 20, 'osaka-umeda': 10, 'kix': 50, 'namba': 5, 'tennoji': 15 } },
+            { id: 3, name: 'Universal Studios Japan', duration: 480, station: 'usj', tags: ['amusement', 'family'], distance: { 'shin-osaka': 30, 'osaka-umeda': 20, 'kix': 70, 'namba': 25, 'tennoji': 30 } },
+            { id: 4, name: 'Shitennoji Temple', duration: 60, station: 'tennoji', tags: ['history', 'temple'], distance: { 'shin-osaka': 30, 'osaka-umeda': 20, 'kix': 45, 'namba': 15, 'tennoji': 5 } },
+            { id: 5, name: 'Umeda Sky Building', duration: 75, station: 'osaka-umeda', tags: ['sightseeing', 'modern'], distance: { 'shin-osaka': 10, 'osaka-umeda': 5, 'kix': 60, 'namba': 15, 'tennoji': 20 } },
+            { id: 6, name: 'Kuromon Market', duration: 90, station: 'namba', tags: ['food', 'shopping', 'market'], distance: { 'shin-osaka': 25, 'osaka-umeda': 15, 'kix': 55, 'namba': 10, 'tennoji': 15 } },
+        ];
+        const allTags = ['history', 'food', 'sightseeing', 'nightlife', 'shopping', 'amusement', 'family', 'temple', 'modern', 'market'];
+        const travelTimes = { // 駅間の移動時間（仮）
+            'osaka-castle-namba': 15, 'namba-osaka-castle': 15,
+            'namba-usj': 25, 'usj-namba': 25,
+            'osaka-umeda-tennoji': 20, 'tennoji-osaka-umeda': 20,
+            'osaka-castle-osaka-umeda': 15, 'osaka-umeda-osaka-castle': 15,
+            'tennoji-namba': 10, 'namba-tennoji': 10,
+        };
+
+        // --- DOM要素 ---
+        const startPointButtons = document.querySelector('.start-point-buttons');
+        const mainContent = document.getElementById('main-content');
+        const timelineSection = document.getElementById('timeline-section');
+        const tagContainer = document.getElementById('tag-filters');
+        const facilityList = document.getElementById('facility-list');
+        const timelineBar = document.getElementById('timeline-bar');
+        const timeControls = document.querySelector('.time-controls');
+        const startTimeDisplay = document.getElementById('start-time-display');
+        const endTimeDisplay = document.getElementById('end-time-display');
+        
+        let selectedStartStation = null;
+        let selectedTags = [];
+        let itinerary = []; // { type: 'facility'/'travel', duration, ... }
+        let startTime = 9 * 60; // 09:00 in minutes
+        let endTime = 18 * 60; // 18:00 in minutes
+
+        // --- 初期化処理 ---
+
+        // タグを生成
+        allTags.forEach(tag => {
+            const tagEl = document.createElement('span');
+            tagEl.className = 'tag';
+            tagEl.textContent = `#${tag}`;
+            tagEl.dataset.tag = tag;
+            tagContainer.appendChild(tagEl);
+        });
+
+        // --- 関数 ---
+        
+        function renderFacilities() {
+            facilityList.innerHTML = '';
+            const filteredFacilities = allFacilities.filter(f => 
+                selectedTags.length === 0 || f.tags.some(t => selectedTags.includes(t))
+            );
+
+            filteredFacilities.forEach(facility => {
+                const card = document.createElement('div');
+                card.className = 'facility-card';
+                card.draggable = true;
+                card.dataset.id = facility.id;
+                card.innerHTML = `
+                    <h3>${facility.name}</h3>
+                    <div class="info">
+                        <span>Stay: ${facility.duration} min</span> | 
+                        <span>Dist: Approx. ${facility.distance[selectedStartStation]} min</span>
+                    </div>
+                `;
+                facilityList.appendChild(card);
+            });
+        }
+
+        function updateTimeline() {
+            timelineBar.innerHTML = '';
+            let totalDuration = 0;
+            itinerary.forEach(item => totalDuration += item.duration);
+
+            itinerary.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = `timeline-item ${item.type}`;
+                itemEl.style.flexGrow = item.duration; // flex-growで比率を表現
+                itemEl.textContent = item.type === 'facility' ? item.name : `${item.duration} min travel`;
+                timelineBar.appendChild(itemEl);
+            });
+            updateTimeProportions();
+        }
+
+        function updateTimeProportions() {
+            const totalMinutes = endTime - startTime;
+            let totalItineraryMinutes = 0;
+            itinerary.forEach(item => totalItineraryMinutes += item.duration);
+
+            const scale = totalMinutes / totalItineraryMinutes;
+
+            // この例ではflex-growで比率を表現しているため、時間変更で全体の幅が変わるわけではない
+            // より複雑なUI（例：ピクセル単位での表示）ではここでの計算が必要になる
+        }
+        
+        function formatTime(minutes) {
+            const h = Math.floor(minutes / 60).toString().padStart(2, '0');
+            const m = (minutes % 60).toString().padStart(2, '0');
+            return `${h}:${m}`;
+        }
+
+        // --- イベントリスナー ---
+
+        // 1. 出発地点選択
+        startPointButtons.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                document.querySelectorAll('.start-point-buttons button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                selectedStartStation = e.target.dataset.station;
+                
+                // 他のセクションを有効化
+                mainContent.classList.remove('disabled-section');
+                timelineSection.classList.remove('disabled-section');
+                
+                renderFacilities();
+            }
+        });
+
+        // 2. タグ選択
+        tagContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('tag')) {
+                e.target.classList.toggle('active');
+                const tag = e.target.dataset.tag;
+                if (selectedTags.includes(tag)) {
+                    selectedTags = selectedTags.filter(t => t !== tag);
+                } else {
+                    selectedTags.push(tag);
+                }
+                renderFacilities();
+            }
+        });
+
+        // 3. ドラッグ＆ドロップ
+        facilityList.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('facility-card')) {
+                e.dataTransfer.setData('text/plain', e.target.dataset.id);
+            }
+        });
+
+        timelineBar.addEventListener('dragover', (e) => {
+            e.preventDefault(); // ドロップを許可
+        });
+
+        timelineBar.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const facilityId = e.dataTransfer.getData('text/plain');
+            const facility = allFacilities.find(f => f.id == facilityId);
+            
+            if (facility) {
+                // 移動時間を計算
+                if (itinerary.length > 0) {
+                    const lastFacility = itinerary[itinerary.length - 1];
+                    const travelKey = `${lastFacility.station}-${facility.station}`;
+                    const travelDuration = travelTimes[travelKey] || 15; // 仮のデフォルト移動時間
+                    itinerary.push({ type: 'travel', duration: travelDuration });
+                }
+                // 施設を追加
+                itinerary.push({ type: 'facility', ...facility });
+                updateTimeline();
+            }
+        });
+        
+        // 4. 時間調整
+        timeControls.addEventListener('click', (e) => {
+             if (e.target.classList.contains('time-adjust')) {
+                 const { type, change } = e.target.dataset;
+                 if (type === 'start') {
+                     startTime += parseInt(change);
+                 } else {
+                     endTime += parseInt(change);
+                 }
+                 //終了時間が開始時間より早くならないように制御
+                 if(endTime <= startTime) {
+                     if (type === 'start') startTime -= parseInt(change);
+                     else endTime -= parseInt(change);
+                     return;
+                 }
+                 startTimeDisplay.textContent = formatTime(startTime);
+                 endTimeDisplay.textContent = formatTime(endTime);
+                 updateTimeProportions();
+             }
+        });
+
+    });
+    </script>
+</body>
+</html>

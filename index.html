@@ -55,14 +55,14 @@
         /* 記事カードのスクリーンショット */
         .article-screenshot { position: absolute; width: 30%; height: auto; border-radius: 6px; border: 2px solid white; box-shadow: 0 6px 15px rgba(0,0,0,0.25); z-index: 1; transition: transform 0.4s ease; }
         
-        /* ▼▼▼ スクリーンショットが1枚になったので位置を調整 ▼▼▼ */
+        /* ▼▼▼ 左側の画像の位置を元に戻しました ▼▼▼ */
         #ss1 { 
-            top: 40px; 
-            left: 50%; 
-            transform: translateX(-50%) rotate(-5deg); /* 中央寄せにして少し傾ける */
+            top: 60px;
+            left: 10%;
+            transform: rotate(-10deg);
         }
         #article-card:hover #ss1 { 
-            transform: translateX(-50%) rotate(-7deg) scale(1.05);
+            transform: rotate(-12deg) scale(1.05);
         }
         
         /* スマホ対応のスタイル */
@@ -91,9 +91,9 @@
             .article-screenshot { width: 45%; z-index: 1; }
             
             #ss1 { 
-                top: 20px; 
-                left: 50%; 
-                transform: translateX(-50%) rotate(-5deg);
+                top: 20px;
+                left: 5%;
+                transform: rotate(-8deg);
             }
         }
     </style>

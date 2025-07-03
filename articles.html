@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles - YOUR LOCALS</title>
+    <style>
+        /* 基本的なスタイリング */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- ヘッダー（index.htmlから流用） --- */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; border-bottom: 1px solid #ddd; background-color: #ffffff; position: sticky; top: 0; z-index: 100; }
+        .header-left, .header-right { display: flex; align-items: center; flex: 1; }
+        .header-right { justify-content: flex-end; }
+        .header-center { display: flex; justify-content: center; flex: 1; }
+        .header-logo img { height: 40px; width: auto; }
+        .nav-list { list-style: none; display: flex; margin: 0; padding: 0; }
+        .nav-item { margin: 0 15px; }
+        .nav-link { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s ease; }
+        .nav-link:hover { color: #007bff; }
+        .language-select { margin-right: 20px; font-weight: 500; }
+        .login-button { padding: 8px 16px; border: 1px solid #333; border-radius: 5px; background-color: white; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .login-button:hover { background-color: #333; color: #fff; }
+        .hamburger-menu { display: none; }
+        .mobile-nav { display: none; }
+
+        /* --- ここから記事一覧ページのスタイル --- */
+        .page-title {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        /* フィルターセクション */
+        .filter-section {
+            background-color: #fff;
+            padding: 25px 30px;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .filter-section h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #555;
+            text-align: center;
+            font-weight: 600;
+        }
+        .filter-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .filter-button {
+            display: block;
+            padding: 12px 10px;
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .filter-button:hover {
+            background-color: #e9e9e9;
+            border-color: #ccc;
+            transform: translateY(-2px);
+        }
+
+        /* 記事カードグリッド */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .post-card {
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .post-card-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .post-card-content {
+            padding: 20px;
+        }
+        .category-tag {
+            display: inline-block;
+            padding: 5px 12px;
+            color: #fff;
+            font-size: 0.8em;
+            font-weight: 600;
+            border-radius: 20px; /* 角丸を強くしてモダンに */
+            margin-bottom: 12px;
+        }
+        /* カテゴリーカラーを調整 */
+        .category-interview { background-color: #00796b; } /* Deep Teal */
+        .category-food { background-color: #d84315; }     /* Deep Orange */
+        .category-culture { background-color: #8d6e63; } /* Brown Grey */
+        .category-people { background-color: #1e88e5; }   /* Blue */
+        
+        .post-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+        .post-card time {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        /* --- スマホ対応 --- */
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .header-left, .header-right { display: none; }
+            .header { padding: 10px 20px; }
+            .hamburger-menu { display: block; cursor: pointer; background: none; border: none; z-index: 1001; }
+            .hamburger-menu span { display: block; width: 25px; height: 3px; background-color: #333; margin: 5px 0; transition: all 0.4s ease; }
+            .hamburger-menu.is-open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .hamburger-menu.is-open span:nth-child(2) { opacity: 0; }
+            .hamburger-menu.is-open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+            .mobile-nav { display: flex; flex-direction: column; justify-content: center; align-items: center; position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 1000; transition: right 0.5s ease; }
+            .mobile-nav.is-open { right: 0; }
+            .mobile-nav .nav-list { flex-direction: column; align-items: center; }
+            .mobile-nav .nav-item { margin: 20px 0; }
+            .mobile-nav .nav-link { font-size: 24px; }
+            
+            .page-title { font-size: 2em; }
+            .posts-grid { grid-template-columns: 1fr; } /* スマホでは1列表示 */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-left"><ul class="nav-list"><li class="nav-item"><a href="/index.html" class="nav-link">Home</a></li><li class="nav-item"><a href="/articles.html" class="nav-link">Article</a></li></ul></div>
+        <div class="header-center"><a href="/index.html" class="header-logo"><img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-07-03%20134309.png" alt="YOUR LOCALS Logo"></a></div>
+        <div class="header-right"><ul class="nav-list"><li class="nav-item"><a href="/about" class="nav-link">About us</a></li></ul><div class="language-select">Language</div><button class="login-button">Login</button></div>
+        <button class="hamburger-menu" aria-label="メニューを開く"><span></span><span></span><span></span></button>
+    </header>
+
+    <nav class="mobile-nav">
+        <ul class="nav-list"><li class="nav-item"><a href="/index.html" class="nav-link">Home</a></li><li class="nav-item"><a href="/articles.html" class="nav-link">Article</a></li><li class="nav-item"><a href="/about" class="nav-link">About us</a></li></ul>
+        <div class="language-select">Language</div><button class="login-button">Login</button>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">Articles</h1>
+
+        <section class="filter-section">
+            <h3>Filter by Category</h3>
+            <div class="filter-grid-container">
+                <a href="#" class="filter-button">Interviews</a>
+                <a href="#" class="filter-button">Food & Drink</a>
+                <a href="#" class="filter-button">Culture & Tradition</a>
+                <a href="#" class="filter-button">Local People</a>
+                <a href="#" class="filter-button">Sightseeing</a>
+                <a href="#" class="filter-button">Shopping</a>
+                <a href="#" class="filter-button">Tips & Tricks</a>
+                <a href="#" class="filter-button">Events</a>
+            </div>
+        </section>
+
+        <main class="posts-grid">
+            <article class="post-card">
+                <a href="#article-page-example">
+                    <div class="post-card-image"><img src="https://i.imgur.com/8QWBHqf.png" alt="Interview"></div>
+                    <div class="post-card-content">
+                        <span class="category-tag category-people">People</span>
+                        <h3>Following a passion for trains to a new life in the countryside.</h3>
+                        <time datetime="2025-06-18">June 18, 2025</time>
+                    </div>
+                </a>
+            </article>
+            <article class="post-card">
+                <a href="#article-page-example-2">
+                    <div class="post-card-image"><img src="https://i.imgur.com/GplnmUI.jpeg" alt="Omurice"></div>
+                    <div class="post-card-content">
+                        <span class="category-tag category-food">Food</span>
+                        <h3>The original Omurice: A taste of classic, Japanese-born comfort food.</h3>
+                        <time datetime="2025-06-15">June 15, 2025</time>
+                    </div>
+                </a>
+            </article>
+            <article class="post-card">
+                <a href="#">
+                    <div class="post-card-image"><img src="https://i.imgur.com/V98wG3J.png" alt="Local experience"></div>
+                    <div class="post-card-content">
+                        <span class="category-tag category-culture">Culture</span>
+                        <h3>Farming, festivals, and fun: Unique experiences you can only find here.</h3>
+                        <time datetime="2025-03-17">March 17, 2025</time>
+                    </div>
+                </a>
+            </article>
+             <article class="post-card">
+                <a href="#">
+                    <div class="post-card-image"><img src="https://i.imgur.com/bK16H8S.png" alt="Cafe"></div>
+                    <div class="post-card-content">
+                        <span class="category-tag category-food">Food</span>
+                        <h3>A hidden-gem cafe for a quiet, relaxing afternoon.</h3>
+                        <time datetime="2025-02-28">February 28, 2025</time>
+                    </div>
+                </a>
+            </article>
+            </main>
+    </div>
+
+    <script>
+        // メニュー開閉のJavaScriptはindex.htmlと同じ
+        const hamburger = document.querySelector('.hamburger-menu');
+        const mobileNav = document.querySelector('.mobile-nav');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('is-open');
+            mobileNav.classList.toggle('is-open');
+        });
+        const navLinks = document.querySelectorAll('.mobile-nav .nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('is-open');
+                mobileNav.classList.remove('is-open');
+            });
+        });
+    </script>
+</body>
+</html>

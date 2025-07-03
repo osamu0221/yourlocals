@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itinerary Creation - YOUR LOCALS</title>
+    <style>
+        /* 基本的なスタイリング */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px;
+            text-align: center; /* 全体を中央揃えに */
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- ヘッダー（他ページと共通） --- */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; border-bottom: 1px solid #ddd; background-color: #ffffff; position: sticky; top: 0; z-index: 100; }
+        .header-left, .header-right { display: flex; align-items: center; flex: 1; }
+        .header-right { justify-content: flex-end; }
+        .header-center { display: flex; justify-content: center; flex: 1; }
+        .header-logo img { height: 40px; width: auto; }
+        .nav-list { list-style: none; display: flex; margin: 0; padding: 0; }
+        .nav-item { margin: 0 15px; }
+        .nav-link { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s ease; }
+        .nav-link:hover { color: #007bff; }
+        .language-select { margin-right: 20px; font-weight: 500; }
+        .login-button { padding: 8px 16px; border: 1px solid #333; border-radius: 5px; background-color: white; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .login-button:hover { background-color: #333; color: #fff; }
+        .hamburger-menu { display: none; }
+        .mobile-nav { display: none; }
+
+        /* --- ここから旅程作成ページのスタイル --- */
+        .intro-section {
+            padding: 60px 0;
+        }
+        .intro-box {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            display: inline-block; /* 中身に合わせて幅が決まるように */
+            margin-bottom: 50px;
+        }
+        .intro-box p {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 15px 0;
+            padding: 0;
+            color: #333;
+        }
+        .intro-box p.highlight {
+            background: linear-gradient(to right, #ff8a00, #e52e71);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        /* 流れるタグのセクション */
+        .tag-scroller {
+            width: 100%;
+            overflow: hidden; /* はみ出した要素を隠す */
+            padding: 20px 0;
+            margin-bottom: 50px;
+        }
+        .tag-track {
+            display: flex;
+            white-space: nowrap; /* タグを改行させない */
+        }
+        .tag-scroller.scroll-left .tag-track {
+            animation: scrollLeft 30s linear infinite;
+        }
+        .tag-scroller.scroll-right .tag-track {
+            animation: scrollRight 30s linear infinite;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 12px 25px;
+            margin: 0 10px;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        @keyframes scrollLeft {
+            from { transform: translateX(0%); }
+            to { transform: translateX(-50%); } /* 半分まで来たらループ */
+        }
+        @keyframes scrollRight {
+            from { transform: translateX(-50%); }
+            to { transform: translateX(0%); }
+        }
+
+        /* 作成開始ボタン */
+        .start-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff4e50, #f9d423);
+            color: white;
+            font-size: 1.8em;
+            font-weight: 700;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 78, 80, 0.4);
+        }
+        .start-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 78, 80, 0.5);
+        }
+        
+        /* --- スマホ対応 --- */
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .header-left, .header-right { display: none; }
+            .header { padding: 10px 20px; }
+            .hamburger-menu { display: block; cursor: pointer; background: none; border: none; z-index: 1001; }
+            .hamburger-menu span { display: block; width: 25px; height: 3px; background-color: #333; margin: 5px 0; transition: all 0.4s ease; }
+            .hamburger-menu.is-open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .hamburger-menu.is-open span:nth-child(2) { opacity: 0; }
+            .hamburger-menu.is-open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+            .mobile-nav { display: flex; flex-direction: column; justify-content: center; align-items: center; position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 1000; transition: right 0.5s ease; }
+            .mobile-nav.is-open { right: 0; }
+            .mobile-nav .nav-list { flex-direction: column; align-items: center; }
+            .mobile-nav .nav-item { margin: 20px 0; }
+            .mobile-nav .nav-link { font-size: 24px; }
+            
+            .intro-box p { font-size: 1.5em; }
+            .start-button { font-size: 1.5em; padding: 15px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-left"><ul class="nav-list"><li class="nav-item"><a href="index.html" class="nav-link">Home</a></li><li class="nav-item"><a href="articles.html" class="nav-link">Article</a></li></ul></div>
+        <div class="header-center"><a href="index.html" class="header-logo"><img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-07-03%20134309.png" alt="YOUR LOCALS Logo"></a></div>
+        <div class="header-right"><ul class="nav-list"><li class="nav-item"><a href="/about" class="nav-link">About us</a></li></ul><div class="language-select">Language</div><button class="login-button">Login</button></div>
+        <button class="hamburger-menu" aria-label="メニューを開く"><span></span><span></span><span></span></button>
+    </header>
+
+    <nav class="mobile-nav">
+        <ul class="nav-list"><li class="nav-item"><a href="index.html" class="nav-link">Home</a></li><li class="nav-item"><a href="articles.html" class="nav-link">Article</a></li><li class="nav-item"><a href="/about" class="nav-link">About us</a></li></ul>
+        <div class="language-select">Language</div><button class="login-button">Login</button>
+    </nav>
+
+    <div class="container">
+        <section class="intro-section">
+            <div class="intro-box">
+                <p>Pick your favorite spots</p>
+                <p class="highlight">DROP!</p>
+                <p>Automatic travel time included!</p>
+            </div>
+
+            <div class="tag-scroller scroll-left">
+                <div class="tag-track">
+                    <span class="tag">#Bar</span><span class="tag">#Cafe</span><span class="tag">#Temple</span><span class="tag">#Shopping</span><span class="tag">#Ramen</span><span class="tag">#Art</span><span class="tag">#Nightlife</span><span class="tag">#Okonomiyaki</span>
+                    <span class="tag">#Bar</span><span class="tag">#Cafe</span><span class="tag">#Temple</span><span class="tag">#Shopping</span><span class="tag">#Ramen</span><span class="tag">#Art</span><span class="tag">#Nightlife</span><span class="tag">#Okonomiyaki</span>
+                </div>
+            </div>
+            <div class="tag-scroller scroll-right">
+                <div class="tag-track">
+                    <span class="tag">#Nature</span><span class="tag">#History</span><span class="tag">#Anime</span><span class="tag">#LocalEats</span><span class="tag">#Souvenirs</span><span class="tag">#Takoyaki</span><span class="tag">#HiddenGem</span><span class="tag">#Park</span>
+                    <span class="tag">#Nature</span><span class="tag">#History</span><span class="tag">#Anime</span><span class="tag">#LocalEats</span><span class="tag">#Souvenirs</span><span class="tag">#Takoyaki</span><span class="tag">#HiddenGem</span><span class="tag">#Park</span>
+                </div>
+            </div>
+
+            <a href="/itinerary-creation-tool" class="start-button">Start Creating</a>
+        </section>
+    </div>
+
+    <script>
+        // メニュー開閉のJavaScriptは他ページと同じ
+        const hamburger = document.querySelector('.hamburger-menu');
+        const mobileNav = document.querySelector('.mobile-nav');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('is-open');
+            mobileNav.classList.toggle('is-open');
+        });
+        const navLinks = document.querySelectorAll('.mobile-nav .nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('is-open');
+                mobileNav.classList.remove('is-open');
+            });
+        });
+    </script>
+</body>
+</html>

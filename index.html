@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YOUR LOCALS</title>
     <style>
-        /* CSS部分は変更ありませんので省略します */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f9f9f9; }
+        /* 基本的なスタイリング */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+
+        /* PC向けヘッダー */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; border-bottom: 1px solid #ddd; background-color: #ffffff; position: sticky; top: 0; z-index: 100; }
         .header-left, .header-right { display: flex; align-items: center; flex: 1; }
         .header-right { justify-content: flex-end; }
@@ -21,8 +27,12 @@
         .login-button:hover { background-color: #333; color: #fff; }
         .hamburger-menu { display: none; }
         .mobile-nav { display: none; }
+        
+        /* 機能紹介セクション */
         main { padding: 50px 40px; }
         .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        
+        /* 全カード共通スタイル */
         .feature-card { position: relative; height: 60vh; border-radius: 12px; overflow: hidden; display: flex; align-items: flex-end; padding: 40px; text-decoration: none; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: transform 0.4s ease, box-shadow 0.4s ease; }
         .feature-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
         .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0) 50%); z-index: 2; }
@@ -31,32 +41,56 @@
         .feature-card p { font-size: 18px; margin: 0 0 20px 0; max-width: 450px; }
         .feature-card .cta-arrow { font-size: 24px; font-weight: bold; transition: transform 0.3s ease; }
         .feature-card:hover .cta-arrow { transform: translateX(10px); }
+
+        /* カードごとの背景画像 */
         #itinerary-card { background-image: url('https://raw.githubusercontent.com/osamu0221/yourlocals/main/22944357_s.jpg'); background-size: cover; background-position: center; }
         #article-card { background-image: url('https://raw.githubusercontent.com/osamu0221/yourlocals/main/24437535_s.jpg'); background-size: cover; background-position: center; overflow: visible; }
-        #article-card .feature-card-content { z-index: 5; }
+        
+        #article-card .feature-card-content {
+            z-index: 5;
+        }
+
+        /* 記事カードのスクリーンショット */
         .article-screenshot { position: absolute; width: 30%; height: auto; border-radius: 6px; border: 2px solid white; box-shadow: 0 6px 15px rgba(0,0,0,0.25); z-index: 1; transition: transform 0.4s ease; }
-        #ss1 { top: 60px; left: 10%; transform: rotate(-10deg); }
-        #article-card:hover #ss1 { transform: rotate(-12deg) scale(1.05); }
+        
+        #ss1 { 
+            top: 60px;
+            left: 10%;
+            transform: rotate(-10deg);
+        }
+        #article-card:hover #ss1 { 
+            transform: rotate(-12deg) scale(1.05);
+        }
+        
+        /* スマホ対応のスタイル */
         @media (max-width: 768px) {
             .header-left, .header-right { display: none; }
             .header { padding: 10px 20px; }
+
             .hamburger-menu { display: block; cursor: pointer; background: none; border: none; z-index: 1001; }
             .hamburger-menu span { display: block; width: 25px; height: 3px; background-color: #333; margin: 5px 0; transition: all 0.4s ease; }
             .hamburger-menu.is-open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
             .hamburger-menu.is-open span:nth-child(2) { opacity: 0; }
             .hamburger-menu.is-open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
             .mobile-nav { display: flex; flex-direction: column; justify-content: center; align-items: center; position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 1000; transition: right 0.5s ease; }
             .mobile-nav.is-open { right: 0; }
             .mobile-nav .nav-list { flex-direction: column; align-items: center; }
             .mobile-nav .nav-item { margin: 20px 0; }
             .mobile-nav .nav-link { font-size: 24px; }
+
             main { padding: 20px; }
             .features-grid { grid-template-columns: 1fr; gap: 20px; }
             .feature-card { height: 50vh; padding: 20px; }
             .feature-card h2 { font-size: 28px; }
             .feature-card p { font-size: 16px; }
+
             .article-screenshot { width: 45%; z-index: 1; }
-            #ss1 { top: 20px; left: 5%; transform: rotate(-8deg); }
+            #ss1 { 
+                top: 20px;
+                left: 5%;
+                transform: rotate(-8deg);
+            }
         }
     </style>
 </head>
@@ -76,7 +110,7 @@
 
     <nav class="mobile-nav">
         <ul class="nav-list">
-             <li class="nav-item"><a href="#itinerary-card" class="nav-link">Itinerary creation</a></li>
+            <li class="nav-item"><a href="#itinerary-card" class="nav-link">Itinerary creation</a></li>
             <li class="nav-item"><a href="articles.html" class="nav-link">Article</a></li>
             <li class="nav-item"><a href="/about" class="nav-link">About us</a></li>
         </ul>

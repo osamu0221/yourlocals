@@ -78,7 +78,6 @@
             background-position: center;
         }
         
-        /* ▼▼▼ ここから更新部分 ▼▼▼ */
         .article-screenshot {
             position: absolute;
             width: 30%;
@@ -90,28 +89,66 @@
             transition: transform 0.4s ease;
         }
 
-        /* 1枚目：左上側へ配置 */
         #ss1 {
             top: 60px;
             left: 10%;
             transform: rotate(-10deg);
         }
 
-        /* 2枚目：右下側へ配置 */
         #ss2 {
             top: 250px;
             left: 70%;
             transform: rotate(8deg);
-            z-index: 4; /* こちらを上に重ねる */
+            z-index: 4;
         }
         
         #article-card:hover #ss1 {
-            transform: rotate(-12deg) scale(1.05); /* ホバー時に少し拡大・回転 */
+            transform: rotate(-12deg) scale(1.05);
         }
         #article-card:hover #ss2 {
-            transform: rotate(10deg) scale(1.05); /* ホバー時に少し拡大・回転 */
+            transform: rotate(10deg) scale(1.05);
         }
-        /* ▲▲▲ ここまで更新部分 ▲▲▲ */
+        
+        /* ▼▼▼ ここからスマホ対応のスタイルを追加 ▼▼▼ */
+        @media (max-width: 768px) {
+            /* ヘッダーの左右の余白を減らす */
+            .header {
+                padding: 10px 20px;
+            }
+            /* ロゴ以外のメニュー項目を非表示にする（ハンバーガーメニュー等で置き換えるのが一般的） */
+            .header-left, .header-right {
+                display: none;
+            }
+
+            /* メインコンテンツの余白を減らす */
+            main {
+                padding: 20px;
+            }
+            
+            /* カードを横並び（2列）から縦並び（1列）に変更 */
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            /* カードの高さを調整 */
+            .feature-card {
+                height: 50vh;
+                padding: 20px;
+            }
+            .feature-card h2 {
+                font-size: 28px;
+            }
+            .feature-card p {
+                font-size: 16px;
+            }
+
+            /* スマホではスクリーンショットを非表示にする（シンプル化のため） */
+            .article-screenshot {
+                display: none;
+            }
+        }
+        /* ▲▲▲ ここまでスマホ対応のスタイル ▲▲▲ */
 
     </style>
 </head>

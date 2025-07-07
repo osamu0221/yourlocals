@@ -53,15 +53,13 @@
             overflow-y: auto;
             flex-grow: 1;
         }
-        /* スクロールバーのスタイル */
         .scrollable-content::-webkit-scrollbar { width: 6px; }
         .scrollable-content::-webkit-scrollbar-track { background: #f1f1f1; }
         .scrollable-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-        .scrollable-content::-webkit-scrollbar-thumb:hover { background: #999; }
 
         /* --- 左パネル: 旅程ボックス --- */
         #itinerary-panel {
-            flex: 0 0 380px; /* 幅を固定 */
+            flex: 0 0 380px;
             border-right: 1px solid var(--border-color);
         }
         .time-setter {
@@ -87,10 +85,8 @@
         }
         #timeline-grid {
             position: relative;
-            --grid-line-color: #f0f0f0;
-            /* 15分ごとの線 (4本で1時間) */
             background-size: 100% calc(var(--hour-height) / 4);
-            background-image: linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+            background-image: linear-gradient(to bottom, #f0f0f0 1px, transparent 1px);
         }
         .time-marker {
             position: absolute;
@@ -100,7 +96,6 @@
             color: var(--secondary-text);
             font-size: 0.8em;
             font-weight: 500;
-            /* 1時間ごとに配置 */
             height: var(--hour-height); 
             padding-top: 5px;
             box-sizing: border-box;
@@ -144,7 +139,7 @@
 
         /* --- 中央パネル: 場所まとめ --- */
         #places-panel {
-            flex: 1; /* 残りの幅をすべて取る */
+            flex: 1;
             min-width: 400px;
         }
         #places-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
@@ -280,7 +275,6 @@
             places: [{ id: 1, name: "Dotonbori Glico Sign", genre: "sightseeing", station: "namba", stay: 30, desc: "A famous landmark in Osaka. Great for photos!", photo: "https://i.imgur.com/GplnmUI.jpeg", mapPos: { top: "62%", left: "48%" } },{ id: 2, name: "Kuromon Market", genre: "food", station: "namba", stay: 90, desc: "Known as 'Osaka's Kitchen'.", photo: "https://i.imgur.com/bK16H8S.png", mapPos: { top: "65%", left: "55%" } },{ id: 3, name: "Osaka Castle", genre: "history", station: "osaka", stay: 120, desc: "A beautiful and historic castle.", photo: "https://i.imgur.com/8QWBHqf.png", mapPos: { top: "40%", left: "70%" } },{ id: 4, name: "Shitennoji Temple", genre: "history", station: "tennoji", stay: 60, desc: "One of Japan's oldest temples.", photo: "https://i.imgur.com/V98wG3J.png", mapPos: { top: "85%", left: "60%" } },{ id: 5, name: "Umeda Sky Building", genre: "sightseeing", station: "osaka", stay: 75, desc: "Offers a stunning 360-degree view.", photo: "https://i.imgur.com/bK16H8S.png", mapPos: { top: "25%", left: "35%" } },{ id: 6, name: "Amerikamura", genre: "shopping", station: "namba", stay: 120, desc: "The center of Osaka's youth culture.", photo: "https://i.imgur.com/GplnmUI.jpeg", mapPos: { top: "58%", left: "40%" } }],
             genres: ["sightseeing", "food", "history", "shopping"],
             stations: { "osaka": { name: "Osaka Station", mapPos: { top: "30%", left: "40%" } }, "namba": { name: "Namba Station", mapPos: { top: "60%", left: "50%" } }, "tennoji": { name: "Tennoji Station", mapPos: { top: "80%", left: "65%" } } },
-            travelTimes: { "osaka-namba": 15, "namba-tennoji": 10, "tennoji-osaka": 20 }
         };
         const dom = { /* DOM要素の取得は前回と同じ */
             timelineGrid: document.getElementById("timeline-grid"), genreList: document.getElementById("genre-list"), placeList: document.getElementById("place-list"), favToggleButton: document.getElementById("fav-toggle-btn"), stationModal: document.getElementById("start-station-modal"), stationSelectionButtons: document.getElementById("station-selection-buttons"), mapContainer: document.getElementById("map-container"), startTimeInput: document.getElementById('start-time'), endTimeInput: document.getElementById('end-time'), detailOverlay: document.getElementById('place-detail-overlay'), detailImg: document.getElementById('detail-img'), detailName: document.getElementById('detail-name'), detailDesc: document.getElementById('detail-desc')
@@ -311,7 +305,7 @@
                 itemEl.className = `itinerary-item ${item.type}`;
                 itemEl.innerHTML = `<strong>${item.name || 'Travel'}</strong><br>${item.duration} min`;
                 itemEl.style.top = `${currentTime * minuteHeight}px`;
-                itemEl.style.height = `${item.duration * minuteHeight - 4}px`; // マージン分を引く
+                itemEl.style.height = `${item.duration * minuteHeight - 4}px`;
                 
                 if (item.type === 'stay') {
                     const handle = document.createElement('div');
@@ -332,10 +326,10 @@
             const doResize = (moveEvent) => {
                 const deltaY = moveEvent.clientY - initialMouseY;
                 let newDuration = initialDuration + Math.round(deltaY / minuteHeight);
-                newDuration = Math.max(15, Math.round(newDuration / 15) * 15); // 15分単位に丸める & 最低15分
+                newDuration = Math.max(15, Math.round(newDuration / 15) * 15);
                 
                 state.itinerary[index].duration = newDuration;
-                renderItinerary(); // 再描画
+                renderItinerary();
             };
             const stopResize = () => {
                 window.removeEventListener('mousemove', doResize);
@@ -345,37 +339,47 @@
             window.addEventListener('mouseup', stopResize);
         };
         
-        // --- 修正点：ondropで正しいdurationをセット ---
+        // --- ▼▼▼ ここから修正箇所 ▼▼▼ ---
+
+        // 1. ドロップを許可する
+        dom.timelineGrid.ondragover = (e) => {
+            e.preventDefault(); 
+        };
+
+        // 2. ドロップ時のロジックを修正
         dom.timelineGrid.ondrop = (e) => {
             e.preventDefault();
             const placeId = parseInt(e.dataTransfer.getData("text/plain"));
             const place = DUMMY_DATA.places.find(p => p.id === placeId);
             
             if(place) {
+                // 旅程にすで何か所かある場合、固定の移動時間を挿入
                 if(state.itinerary.length > 0){
-                    const lastItem = state.itinerary.filter(i => i.type === 'stay').pop();
-                    if (lastItem) {
-                       const lastPlace = DUMMY_DATA.places.find(p => p.id === lastItem.id);
-                       const travelKey = `${lastPlace.station}-${place.station}`; 
-                       const revTravelKey = `${place.station}-${lastPlace.station}`;
-                       const travelTime = DUMMY_DATA.travelTimes[travelKey] || DUMMY_DATA.travelTimes[revTravelKey] || 15;
-                       state.itinerary.push({ id: `travel-${Date.now()}`, type: 'travel', duration: travelTime });
-                    }
+                    const FIXED_TRAVEL_TIME = 20; // 適当な固定移動時間（20分）
+                    state.itinerary.push({ 
+                        id: `travel-${Date.now()}`, 
+                        type: 'travel', 
+                        name: 'Travel Time',
+                        duration: FIXED_TRAVEL_TIME 
+                    });
                 }
-                // ▼▼▼ ここが修正点 ▼▼▼
-                // 施設を旅程に追加する際に、`stay`プロパティを`duration`として渡す
+                
+                // 施設を旅程に追加
                 state.itinerary.push({ 
                     id: place.id,
                     name: place.name,
                     station: place.station,
                     type: 'stay', 
-                    duration: place.stay // `stay`の値を`duration`に設定
+                    duration: place.stay // デフォルトの滞在時間をdurationとして設定
                 });
                 renderItinerary();
             }
         };
+        
+        // --- ▲▲▲ ここまで修正箇所 ▲▲▲ ---
 
-        // --- 他の関数は前回と同じなので簡略化 ---
+
+        // --- 他の関数（変更なし） ---
         const render = () => { renderPlaces(); renderItinerary(); renderMapPins(); renderGenreButtons(); };
         const renderStationSelection = () => { dom.stationSelectionButtons.innerHTML = ''; Object.keys(DUMMY_DATA.stations).forEach(key => { const station = DUMMY_DATA.stations[key]; const btn = document.createElement("button"); btn.className = "station-btn"; btn.textContent = station.name; btn.onmouseenter = () => highlightPin(key, true); btn.onmouseleave = () => highlightPin(key, false); btn.onclick = () => selectStartStation(key); dom.stationSelectionButtons.appendChild(btn); }); };
         const renderGenreButtons = () => { dom.genreList.innerHTML = ''; DUMMY_DATA.genres.forEach(genre => { const btn = document.createElement("button"); btn.className = "genre-btn"; if(state.currentFilter.type === 'genre' && state.currentFilter.value === genre && !state.isShowingFavorites) { btn.classList.add("active"); } btn.textContent = genre.charAt(0).toUpperCase() + genre.slice(1); btn.onclick = () => { state.isShowingFavorites = false; state.currentFilter = { type: 'genre', value: genre }; render(); }; dom.genreList.appendChild(btn); }); };

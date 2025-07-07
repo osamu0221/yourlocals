@@ -56,9 +56,9 @@
         .post-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         .post-card-image img { width: 100%; height: 200px; object-fit: cover; display: block; }
         .post-card-content { padding: 20px; }
-        .category-tag { display: inline-block; padding: 5px 12px; color: #fff; font-size: 0.8em; font-weight: 600; border-radius: 20px; margin-bottom: 12px; }
+        .category-tag { display: inline-block; padding: 5px 12px; color: #fff; font-size: 0.8em; font-weight: 600; border-radius: 20px; margin-bottom: 12px; text-transform: capitalize; }
         
-        /* ▼▼▼ 新しいカテゴリの色分け ▼▼▼ */
+        /* カテゴリの色分け */
         .category-foods { background-color: #c0392b; } /* 赤 */
         .category-cafe { background-color: #8d6e63; }
         .category-sweets { background-color: #d81b60; }
@@ -73,7 +73,7 @@
         .post-card time { color: #777; font-size: 0.9em; }
 
         /* --- 記事詳細ページのスタイル --- */
-        #article-detail { display: none; /* 初期状態は非表示 */ }
+        #article-detail { display: none; }
         .article-header img { width: 100%; max-height: 500px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; }
         .article-header h1 { font-size: 2.2em; margin: 0 0 10px 0; }
         .article-content { background-color: #fff; padding: 30px; border-radius: 12px; line-height: 1.8; font-size: 1.1em; }
@@ -81,10 +81,11 @@
         .article-content h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 40px; }
         .info-box { margin-top: 40px; padding: 20px; border-radius: 8px; border: 2px solid; }
         .info-box p { margin: 5px 0; }
-        .back-to-list { display: inline-block; margin-top: 30px; padding: 10px 20px; background-color: #555; color: white; border-radius: 5px; }
+        .back-to-list { display: inline-block; margin-top: 30px; padding: 10px 20px; background-color: #555; color: white; border-radius: 5px; cursor: pointer;}
 
-        /* ▼▼▼ カテゴリごとの枠線の色 ▼▼▼ */
+        /* カテゴリごとの枠線の色 */
         .info-box.category-shopping { border-color: #1a237e; }
+        .info-box.category-foods { border-color: #c0392b; }
 
         /* --- スマホ対応 --- */
         @media (max-width: 768px) {
@@ -142,35 +143,63 @@
         </div>
 
         <div id="article-detail">
-            <a href="#" class="back-to-list" id="back-button">&laquo; Back to all articles</a>
+            <div class="back-to-list" id="back-button">&laquo; Back to all articles</div>
             <article>
                 <header class="article-header">
                     <span id="detail-category-tag" class="category-tag"></span>
                     <h1 id="detail-title"></h1>
                     <img id="detail-main-image" src="" alt="">
                 </header>
-                <div class="article-content" id="detail-content">
-                    </div>
+                <div class="article-content" id="detail-content"></div>
             </article>
         </div>
     </div>
 
     <script>
-        // ハンバーガーメニューのスクリプト
         const hamburger = document.querySelector('.hamburger-menu');
         const mobileNav = document.querySelector('.mobile-nav');
         hamburger.addEventListener('click', () => { hamburger.classList.toggle('is-open'); mobileNav.classList.toggle('is-open'); });
         document.querySelectorAll('.mobile-nav .nav-link').forEach(link => { link.addEventListener('click', () => { hamburger.classList.remove('is-open'); mobileNav.classList.remove('is-open'); }); });
         
-        // --- ▼▼▼ ここから記事フィルタリングとページ表示のJavaScript ▼▼▼ ---
         document.addEventListener('DOMContentLoaded', () => {
             
-            // ダミーデータ
+            // ▼▼▼ ダミー記事データを追加 ▼▼▼
             const posts = [
-                { id: 1, title: "One of the 27 best record shops in the world to visit", category: "shopping", date: "July 07, 2025", image: "https://i.imgur.com/vH1rS3A.jpeg" },
-                { id: 2, title: "Deep Osaka: A journey into classic 'Kushikatsu'", category: "foods", date: "July 05, 2025", image: "https://i.imgur.com/GplnmUI.jpeg" },
-                { id: 3, title: "Retro gaming paradise: Smart Ball in Shinsekai", category: "activity", date: "July 02, 2025", image: "https://i.imgur.com/V98wG3J.png" },
-                { id: 4, title: "A quiet afternoon at a Showa-era 'Kissaten'", category: "cafe", date: "June 28, 2025", image: "https://i.imgur.com/bK16H8S.png" }
+                { 
+                    id: 1, 
+                    title: "One of the 27 best record shops in the world to visit", 
+                    category: "shopping", 
+                    date: "July 07, 2025", 
+                    image: "https://i.imgur.com/vH1rS3A.jpeg" 
+                },
+                { 
+                    id: 2, 
+                    title: "Deep Osaka: A journey into classic 'Kushikatsu'", 
+                    category: "foods", 
+                    date: "July 05, 2025", 
+                    image: "https://i.imgur.com/GplnmUI.jpeg" 
+                },
+                { 
+                    id: 3, 
+                    title: "Retro gaming paradise: Smart Ball in Shinsekai", 
+                    category: "activity", 
+                    date: "July 02, 2025", 
+                    image: "https://i.imgur.com/V98wG3J.png" 
+                },
+                { 
+                    id: 4, 
+                    title: "A quiet afternoon at a Showa-era 'Kissaten'", 
+                    category: "cafe", 
+                    date: "June 28, 2025", 
+                    image: "https://i.imgur.com/bK16H8S.png" 
+                },
+                {
+                    id: 5,
+                    title: "Finding Treasure in a Retro Neighborhood Shop",
+                    category: "shopping",
+                    date: "July 11, 2025",
+                    image: "https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E7%94%BB%E5%83%8F1.png"
+                }
             ];
 
             const postsContainer = document.getElementById('posts-container');
@@ -201,27 +230,47 @@
             };
 
             const showArticle = (postId) => {
-                if (postId === 1) { // Flake Recordsのデモ記事
-                    document.getElementById('detail-category-tag').className = 'category-tag category-shopping';
-                    document.getElementById('detail-category-tag').textContent = 'shopping';
-                    document.getElementById('detail-title').textContent = "One of the 27 best record shops in the world to visit";
-                    document.getElementById('detail-main-image').src = "https://i.imgur.com/vH1rS3A.jpeg";
-                    document.getElementById('detail-content').innerHTML = `
-                        <p>While listening styles are shifting toward downloading and streaming music, the boom in analog records is secretly being rekindled. According to a report by the Recording Industry Association of America, vinyl record sales surpassed CD sales in the United States in the first half of 2020. Japan is no exception.</p>
-                        <img src="https://i.imgur.com/Y1N1wIF.jpeg" alt="Inside the record store">
-                        <h2>FLAKE RECORDS - A Must-Visit for Music Lovers</h2>
-                        <p>This time we would like to introduce “FLAKE RECORDS” located in Horie. This store was selected by the international online media Buzzfeed as one of the “27 most fascinating record stores in the world you should visit before you die” and is one of Osaka's leading record stores.</p>
-                        <p>The store is lined with many records as shown in the photo. Rock, of course, but also hip-hop, soul, and electronic music. We have just about all the coolest music in the store!</p>
-                        <img src="https://i.imgur.com/Q5w1D7t.jpeg" alt="Record shelves">
-                        <p>Every record has a commentary written by the owner, and you can feel the owner's love for the record! If you are a music lover, this shop is a must visit when you come to Osaka!</p>
-                        <div class="info-box category-shopping">
+                const post = posts.find(p => p.id === postId);
+                if (!post) return;
+
+                let articleHTML = '';
+
+                // ▼▼▼ 新しいダミー記事の内容を定義 ▼▼▼
+                if (post.id === 5) { // 新しく追加した記事
+                    articleHTML = `
+                        <p>In the quiet streets of Nakazakicho, you'll find shops that seem to have stopped in time. This is a story about finding unexpected treasures in one such place.</p>
+                        <img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E7%94%BB%E5%83%8F2.png" alt="Inside the shop">
+                        <h2>A Unique Atmosphere</h2>
+                        <p>The moment you step inside, you are greeted by a collection of items, each with its own story. From vintage tableware to old books, it's a paradise for those who love unique finds.</p>
+                        <img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E7%94%BB%E5%83%8F3.png" alt="Old cameras">
+                        <img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E7%94%BB%E5%83%8F4.png" alt="Vintage items">
+                        <p>The owner carefully curates each item, bringing together a collection that is both nostalgic and fresh. You can spend hours just Browse the shelves.</p>
+                        <img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E7%94%BB%E5%83%8F5.png" alt="Handmade goods">
+                        <h2>Shop Information & Map</h2>
+                        <div class="info-box category-${post.category}">
+                            <p><strong>Store Name:</strong> Zakka-ya P.O.T</p>
+                            <p><strong>Address:</strong> 1-7-10 Nakazaki, Kita-ku, Osaka-shi, Osaka</p>
+                            <p><strong>Opening:</strong> 13:00 - 19:00 (Irregular holidays)</p>
+                            <p><strong>Closest Station:</strong> Nakazakicho Station, Tanimachi Line</p>
+                        </div>
+                        <img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E7%94%BB%E5%83%8F6.png" alt="Map to the store">
+                    `;
+                } else if (post.id === 1) { // Flake Records
+                    articleHTML = `
+                        <p>While listening styles are shifting toward downloading and streaming music, the boom in analog records is secretly being rekindled...</p>
+                        <div class="info-box category-${post.category}">
                             <p><strong>Store Name:</strong> FLAKE RECORDS</p>
                             <p><strong>Address:</strong> 201 SONO Yotsubashi Building, 1-11-9 Minamihorie, Nishi-ku, Osaka-shi, Osaka</p>
-                            <p><strong>Opening:</strong> 12:00 - 20:00</p>
-                            <p><strong>Closest Station:</strong> Yotsubashi Station, Osaka Metro Yotsubashi Line</p>
                         </div>
                     `;
                 }
+                // 他のIDの記事内容もここに追加できる
+
+                document.getElementById('detail-category-tag').className = `category-tag category-${post.category}`;
+                document.getElementById('detail-category-tag').textContent = post.category;
+                document.getElementById('detail-title').textContent = post.title;
+                document.getElementById('detail-main-image').src = post.image;
+                document.getElementById('detail-content').innerHTML = articleHTML;
                 
                 articleListView.style.display = 'none';
                 articleDetailView.style.display = 'block';
@@ -244,7 +293,6 @@
                 window.scrollTo(0, 0);
             });
 
-            // 初期表示
             renderPosts();
             document.querySelector('.filter-button[data-category="all"]').classList.add('active');
         });

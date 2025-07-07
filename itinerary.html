@@ -39,7 +39,7 @@
         .hamburger-menu { display: none; }
         .mobile-nav { display: none; }
 
-        /* ▼▼▼ ここから差し替えるアニメーションのスタイル ▼▼▼ */
+        /* アニメーションのスタイル */
         .intro-container {
             position: relative;
             width: 100%;
@@ -62,7 +62,6 @@
         }
         .stage.active { opacity: 1; }
 
-        /* --- ステージ1 --- */
         .osaka-map { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.2); width: 400px; height: auto; opacity: 0.3; }
         .floating-photo { position: absolute; width: 80px; height: 80px; object-fit: cover; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); animation: float 6s ease-in-out infinite; }
         #p1 { top: 15%; left: 70%; animation-delay: 0s; }
@@ -72,7 +71,6 @@
         #p5 { top: 25%; left: 20%; animation-delay: -3s; }
         .plan-box-outline { position: absolute; top: 50%; left: 35%; transform: translateY(-50%); width: 250px; height: 300px; border: 3px dashed #ccc; border-radius: 15px; }
 
-        /* --- ステージ2 --- */
         .shooting-arrow { position: absolute; width: 100px; height: auto; opacity: 0; animation: shoot 1.5s ease-out forwards; }
         #arrow1 { top: 28%; left: 45%; animation-delay: 0s; }
         #arrow2 { top: 48%; left: 45%; animation-delay: 1.8s; }
@@ -83,57 +81,46 @@
         #item2 { background-color: #c8e6c9; animation-delay: 3.1s; }
         #item3 { background-color: #b3e5fc; animation-delay: 4.9s; }
 
-        /* --- ステージ3 --- */
         .final-content { text-align: center; }
         .thought-bubble { position: relative; background: white; border-radius: 50%; width: 400px; height: 300px; display: flex; justify-content: center; align-items: center; font-size: 2em; font-weight: bold; text-align: center; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); animation: bubble-in 1s ease-out forwards; }
         .start-button { margin-top: 40px; background: #ffd600; color: #333; font-size: 1.5em; font-weight: 700; padding: 20px 40px; border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255, 214, 0, 0.5); animation: button-in 0.8s 0.5s ease-out backwards; }
         .start-button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 214, 0, 0.6); }
 
-        /* --- アニメーション定義 --- */
+        /* ▼▼▼ スキップボタンのスタイルを追加 ▼▼▼ */
+        .skip-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            z-index: 10; /* アニメーション要素より手前に表示 */
+            transition: background-color 0.3s;
+        }
+        .skip-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* アニメーション定義 */
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         @keyframes shoot { 0% { transform: translate(200px, -50px) scale(0.5); opacity: 1; } 100% { transform: translate(0, 0) scale(1); opacity: 0; } }
         @keyframes fill-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
         @keyframes bubble-in { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes button-in { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        /* ▲▲▲ ここまでアニメーションのスタイル ▲▲▲ */
 
-
-        /* 流れるタグのセクション（維持） */
-        .tag-scroller {
-            width: 100%;
-            overflow: hidden;
-            padding: 20px 0;
-            margin-bottom: 20px;
-        }
-        .tag-track {
-            display: flex;
-            white-space: nowrap;
-        }
-        .tag-scroller.scroll-left .tag-track {
-            animation: scrollLeft 30s linear infinite;
-        }
-        .tag-scroller.scroll-right .tag-track {
-            animation: scrollRight 30s linear infinite;
-        }
-        .tag {
-            display: inline-block;
-            background-color: #e9ecef;
-            padding: 12px 25px;
-            margin: 0 10px;
-            border-radius: 30px;
-            font-weight: 500;
-        }
-
-        @keyframes scrollLeft {
-            from { transform: translateX(0%); }
-            to { transform: translateX(-50%); }
-        }
-        @keyframes scrollRight {
-            from { transform: translateX(-50%); }
-            to { transform: translateX(0%); }
-        }
+        /* 流れるタグのセクション */
+        .tag-scroller { width: 100%; overflow: hidden; padding: 20px 0; margin-bottom: 20px; }
+        .tag-track { display: flex; white-space: nowrap; }
+        .tag-scroller.scroll-left .tag-track { animation: scrollLeft 30s linear infinite; }
+        .tag-scroller.scroll-right .tag-track { animation: scrollRight 30s linear infinite; }
+        .tag { display: inline-block; background-color: #e9ecef; padding: 12px 25px; margin: 0 10px; border-radius: 30px; font-weight: 500; }
+        @keyframes scrollLeft { from { transform: translateX(0%); } to { transform: translateX(-50%); } }
+        @keyframes scrollRight { from { transform: translateX(-50%); } to { transform: translateX(0%); } }
         
-        /* --- スマホ対応 --- */
+        /* スマホ対応 */
         @media (max-width: 768px) {
             .container { padding: 20px; }
             .header-left, .header-right { display: none; }
@@ -148,7 +135,6 @@
             .mobile-nav .nav-list { flex-direction: column; align-items: center; }
             .mobile-nav .nav-item { margin: 20px 0; }
             .mobile-nav .nav-link { font-size: 24px; }
-            
             .intro-container { height: 50vh; }
             .thought-bubble { width: 300px; height: 220px; font-size: 1.5em; }
             .start-button { font-size: 1.2em; }
@@ -197,6 +183,8 @@
                     <a href="itinerary-builder.html"><button class="start-button">Let's get it started!!</button></a>
                 </div>
             </div>
+            
+            <a href="itinerary-builder.html" class="skip-button">Skip Animation &raquo;</a>
         </div>
         
         <div class="tag-scroller scroll-left">
@@ -234,16 +222,11 @@
         const stage2 = document.getElementById('stage2');
         const stage3 = document.getElementById('stage3');
 
-        // 1段階目 開始 (4秒間)
         stage1.classList.add('active');
-
-        // 2段階目へ (4秒後から6秒間)
         setTimeout(() => {
             stage1.classList.remove('active');
             stage2.classList.add('active');
         }, 4000);
-
-        // 3段階目へ (合計10秒後)
         setTimeout(() => {
             stage2.classList.remove('active');
             stage3.classList.add('active');

@@ -3,198 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Itinerary Creation - YOUR LOCALS</title>
+    <title>Welcome - YOUR LOCALS</title>
     <style>
-        /* 基本的なスタイリング */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px;
-            text-align: center; /* 全体を中央揃えに */
-        }
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* --- ヘッダー（他ページと共通） --- */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; border-bottom: 1px solid #ddd; background-color: #ffffff; position: sticky; top: 0; z-index: 100; }
-        .header-left, .header-right { display: flex; align-items: center; flex: 1; }
-        .header-right { justify-content: flex-end; }
-        .header-center { display: flex; justify-content: center; flex: 1; }
-        .header-logo img { height: 40px; width: auto; }
-        .nav-list { list-style: none; display: flex; margin: 0; padding: 0; }
-        .nav-item { margin: 0 15px; }
-        .nav-link { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s ease; }
-        .nav-link:hover { color: #007bff; }
-        .language-select { margin-right: 20px; font-weight: 500; }
-        .login-button { padding: 8px 16px; border: 1px solid #333; border-radius: 5px; background-color: white; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
-        .login-button:hover { background-color: #333; color: #fff; }
-        .hamburger-menu { display: none; }
-        .mobile-nav { display: none; }
-
-        /* --- ここから旅程作成ページのスタイル --- */
-        .intro-section {
-            padding: 60px 0;
-        }
-        .intro-box {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-            display: inline-block; /* 中身に合わせて幅が決まるように */
-            margin-bottom: 50px;
-        }
-        .intro-box p {
-            font-size: 2em;
-            font-weight: 700;
-            margin: 15px 0;
-            padding: 0;
-            color: #333;
-        }
-        .intro-box p.highlight {
-            background: linear-gradient(to right, #ff8a00, #e52e71);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            display: inline-block;
-        }
-
-        /* 流れるタグのセクション */
-        .tag-scroller {
-            width: 100%;
-            overflow: hidden; /* はみ出した要素を隠す */
-            padding: 20px 0;
-            margin-bottom: 50px;
-        }
-        .tag-track {
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f2f5; }
+        .intro-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
-            white-space: nowrap; /* タグを改行させない */
+            justify-content: center;
+            align-items: center;
         }
-        .tag-scroller.scroll-left .tag-track {
-            animation: scrollLeft 30s linear infinite;
+        .stage {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
         }
-        .tag-scroller.scroll-right .tag-track {
-            animation: scrollRight 30s linear infinite;
+        .stage.active { opacity: 1; }
+
+        /* --- ステージ1 --- */
+        .osaka-map {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.2); /* もうちょい拡大 */
+            width: 400px;
+            height: auto;
+            opacity: 0.3;
         }
-        .tag {
-            display: inline-block;
-            background-color: #e9ecef;
-            padding: 12px 25px;
-            margin: 0 10px;
-            border-radius: 30px;
-            font-weight: 500;
+        .floating-photo {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: float 6s ease-in-out infinite; /* ぷかぷかする感じ */
+        }
+        #p1 { top: 20%; left: 70%; animation-delay: 0s; }
+        #p2 { top: 40%; left: 80%; animation-delay: -2s; }
+        #p3 { top: 60%; left: 75%; animation-delay: -4s; }
+        #p4 { top: 80%; left: 65%; animation-delay: -1s; }
+        #p5 { top: 30%; left: 20%; animation-delay: -3s; }
+        .plan-box-outline {
+            position: absolute;
+            top: 50%;
+            left: 35%;
+            transform: translateY(-50%);
+            width: 250px;
+            height: 300px;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
         }
 
-        @keyframes scrollLeft {
-            from { transform: translateX(0%); }
-            to { transform: translateX(-50%); } /* 半分まで来たらループ */
+        /* --- ステージ2 --- */
+        .shooting-arrow {
+            position: absolute;
+            width: 100px;
+            height: auto;
+            opacity: 0;
+            animation: shoot 1.5s ease-out forwards;
         }
-        @keyframes scrollRight {
-            from { transform: translateX(-50%); }
-            to { transform: translateX(0%); }
+        #arrow1 { top: 22%; left: 45%; animation-delay: 0s; }
+        #arrow2 { top: 42%; left: 45%; animation-delay: 1.8s; }
+        #arrow3 { top: 62%; left: 45%; animation-delay: 3.6s; }
+        .plan-box-filled {
+            position: absolute;
+            top: 50%; left: 35%;
+            transform: translateY(-50%);
+            width: 250px;
         }
+        .plan-item {
+            height: 50px;
+            margin: 15px 0;
+            border-radius: 10px;
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: fill-in 0.5s ease-out forwards;
+        }
+        #item1 { background-color: #ffcdd2; animation-delay: 1.3s; }
+        #item2 { background-color: #c8e6c9; animation-delay: 3.1s; }
+        #item3 { background-color: #b3e5fc; animation-delay: 4.9s; }
 
-        /* 作成開始ボタン */
+        /* --- ステージ3 --- */
+        .final-content { text-align: center; }
+        .thought-bubble {
+            position: relative;
+            background: white;
+            border-radius: 50%;
+            width: 400px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            animation: bubble-in 1s ease-out forwards;
+        }
         .start-button {
-            display: inline-block;
-            background: linear-gradient(45deg, #ff4e50, #f9d423);
-            color: white;
-            font-size: 1.8em;
+            margin-top: 40px;
+            background: #ffd600;
+            color: #333;
+            font-size: 1.5em;
             font-weight: 700;
-            padding: 20px 50px;
+            padding: 20px 40px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 78, 80, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 214, 0, 0.5);
+            animation: button-in 0.8s 0.5s ease-out backwards;
         }
-        .start-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(255, 78, 80, 0.5);
+        .start-button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 214, 0, 0.6); }
+
+        /* --- アニメーション定義 --- */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
-        
-        /* --- スマホ対応 --- */
-        @media (max-width: 768px) {
-            .container { padding: 20px; }
-            .header-left, .header-right { display: none; }
-            .header { padding: 10px 20px; }
-            .hamburger-menu { display: block; cursor: pointer; background: none; border: none; z-index: 1001; }
-            .hamburger-menu span { display: block; width: 25px; height: 3px; background-color: #333; margin: 5px 0; transition: all 0.4s ease; }
-            .hamburger-menu.is-open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-            .hamburger-menu.is-open span:nth-child(2) { opacity: 0; }
-            .hamburger-menu.is-open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-            .mobile-nav { display: flex; flex-direction: column; justify-content: center; align-items: center; position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 1000; transition: right 0.5s ease; }
-            .mobile-nav.is-open { right: 0; }
-            .mobile-nav .nav-list { flex-direction: column; align-items: center; }
-            .mobile-nav .nav-item { margin: 20px 0; }
-            .mobile-nav .nav-link { font-size: 24px; }
-            
-            .intro-box p { font-size: 1.5em; }
-            .start-button { font-size: 1.5em; padding: 15px 30px; }
+        @keyframes shoot { /* 流れ星みたいな感じ */
+            0% { transform: translate(200px, -50px) scale(0.5); opacity: 1; }
+            100% { transform: translate(0, 0) scale(1); opacity: 0; }
+        }
+        @keyframes fill-in {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+        @keyframes bubble-in {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes button-in {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="header-left"><ul class="nav-list"><li class="nav-item"><a href="index.html" class="nav-link">Home</a></li><li class="nav-item"><a href="articles.html" class="nav-link">Article</a></li></ul></div>
-        <div class="header-center"><a href="index.html" class="header-logo"><img src="https://raw.githubusercontent.com/osamu0221/yourlocals/main/%E3%82%B9%E3%82%AF%E3%83%A_B%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-07-03%20134309.png" alt="YOUR LOCALS Logo"></a></div>
-        <div class="header-right"><ul class="nav-list"><li class="nav-item"><a href="/about" class="nav-link">About us</a></li></ul><div class="language-select">Language</div><button class="login-button">Login</button></div>
-        <button class="hamburger-menu" aria-label="メニューを開く"><span></span><span></span><span></span></button>
-    </header>
+    <div class="intro-container">
+        <div id="stage1" class="stage">
+            <img src="https://i.imgur.com/8QWBHqf.png" alt="Osaka Photo" class="floating-photo" id="p1">
+            <img src="https://i.imgur.com/GplnmUI.jpeg" alt="Osaka Photo" class="floating-photo" id="p2">
+            <img src="https://i.imgur.com/V98wG3J.png" alt="Osaka Photo" class="floating-photo" id="p3">
+            <img src="https://i.imgur.com/bK16H8S.png" alt="Osaka Photo" class="floating-photo" id="p4">
+            <div class="plan-box-outline"></div>
+            <img src="https://svgsilh.com/svg/29283.svg" alt="Osaka Map" class="osaka-map">
+        </div>
 
-    <nav class="mobile-nav">
-        <ul class="nav-list"><li class="nav-item"><a href="index.html" class="nav-link">Home</a></li><li class="nav-item"><a href="articles.html" class="nav-link">Article</a></li><li class="nav-item"><a href="/about" class="nav-link">About us</a></li></ul>
-        <div class="language-select">Language</div><button class="login-button">Login</button>
-    </nav>
-
-    <div class="container">
-        <section class="intro-section">
-            <div class="intro-box">
-                <p>Pick your favorite spots</p>
-                <p class="highlight">DROP!</p>
-                <p>Automatic travel time included!</p>
+        <div id="stage2" class="stage">
+            <div class="plan-box-filled">
+                <div class="plan-item" id="item1"></div>
+                <div class="plan-item" id="item2"></div>
+                <div class="plan-item" id="item3"></div>
             </div>
+            <svg id="arrow1" class="shooting-arrow" viewBox="0 0 100 50"><path d="M0 25 H70 M60 15 L70 25 L60 35" stroke="#ff8a00" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+            <svg id="arrow2" class="shooting-arrow" viewBox="0 0 100 50"><path d="M0 25 H70 M60 15 L70 25 L60 35" stroke="#4caf50" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+            <svg id="arrow3" class="shooting-arrow" viewBox="0 0 100 50"><path d="M0 25 H70 M60 15 L70 25 L60 35" stroke="#2196f3" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+        </div>
 
-            <div class="tag-scroller scroll-left">
-                <div class="tag-track">
-                    <span class="tag">#Bar</span><span class="tag">#Cafe</span><span class="tag">#Temple</span><span class="tag">#Shopping</span><span class="tag">#Ramen</span><span class="tag">#Art</span><span class="tag">#Nightlife</span><span class="tag">#Okonomiyaki</span>
-                    <span class="tag">#Bar</span><span class="tag">#Cafe</span><span class="tag">#Temple</span><span class="tag">#Shopping</span><span class="tag">#Ramen</span><span class="tag">#Art</span><span class="tag">#Nightlife</span><span class="tag">#Okonomiyaki</span>
-                </div>
+        <div id="stage3" class="stage">
+            <div class="final-content">
+                <div class="thought-bubble">Plan Your Itinerary in<br>Osaka!!</div>
+                <a href="itinerary-builder.html"><button class="start-button">Let's get it started!!</button></a>
             </div>
-            <div class="tag-scroller scroll-right">
-                <div class="tag-track">
-                    <span class="tag">#Nature</span><span class="tag">#History</span><span class="tag">#Anime</span><span class="tag">#LocalEats</span><span class="tag">#Souvenirs</span><span class="tag">#Takoyaki</span><span class="tag">#HiddenGem</span><span class="tag">#Park</span>
-                    <span class="tag">#Nature</span><span class="tag">#History</span><span class="tag">#Anime</span><span class="tag">#LocalEats</span><span class="tag">#Souvenirs</span><span class="tag">#Takoyaki</span><span class="tag">#HiddenGem</span><span class="tag">#Park</span>
-                </div>
-            </div>
-
-            <a href="itinerary-builder.html" class="start-button">Start Creating</a>
-        </section>
+        </div>
     </div>
 
     <script>
-        // メニュー開閉のJavaScriptは他ページと同じ
-        const hamburger = document.querySelector('.hamburger-menu');
-        const mobileNav = document.querySelector('.mobile-nav');
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('is-open');
-            mobileNav.classList.toggle('is-open');
-        });
-        const navLinks = document.querySelectorAll('.mobile-nav .nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('is-open');
-                mobileNav.classList.remove('is-open');
-            });
+        document.addEventListener('DOMContentLoaded', () => {
+            const stage1 = document.getElementById('stage1');
+            const stage2 = document.getElementById('stage2');
+            const stage3 = document.getElementById('stage3');
+
+            // 1段階目 開始
+            stage1.classList.add('active');
+
+            // 2段階目へ (4秒後)
+            setTimeout(() => {
+                stage1.classList.remove('active');
+                stage2.classList.add('active');
+            }, 4000);
+
+            // 3段階目へ (さらに6秒後)
+            setTimeout(() => {
+                stage2.classList.remove('active');
+                stage3.classList.add('active');
+            }, 10000);
         });
     </script>
+
 </body>
 </html>

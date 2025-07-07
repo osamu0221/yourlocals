@@ -5,281 +5,276 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Itinerary Builder - YOUR LOCALS</title>
     <style>
-        /* --- 基本スタイル --- */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .disabled-section { opacity: 0.4; pointer-events: none; transition: opacity 0.5s ease; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; height: 100vh; display: flex; flex-direction: column; }
+        .main-builder-container { display: flex; flex: 1; overflow: hidden; }
 
-        /* --- ヘッダー（他ページと共通の仮スタイル） --- */
-        .header { padding: 10px 20px; border-bottom: 1px solid #ddd; background-color: #fff; text-align: center; font-size: 1.5em; font-weight: bold; }
+        /* --- 3パネル共通 --- */
+        .panel { padding: 20px; background-color: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .panel-title { margin-top: 0; font-size: 1.5em; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .scrollable-content { overflow-y: auto; height: calc(100% - 60px); }
 
-        /* --- 1. 出発地点選択 --- */
-        .start-point-section { text-align: center; padding: 20px; background-color: #fff; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .start-point-section h2 { margin-top: 0; font-size: 1.2em; color: #555; }
-        .start-point-buttons button { font-size: 1em; padding: 10px 20px; margin: 5px; border: 2px solid transparent; background-color: #e9ecef; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
-        .start-point-buttons button:hover { background-color: #ced4da; }
-        .start-point-buttons button.active { background-color: #007bff; color: white; border-color: #0056b3; }
+        /* --- 左パネル: 旅程ボックス --- */
+        #itinerary-panel { flex-basis: 350px; display: flex; flex-direction: column; }
+        .time-setter { display: flex; gap: 10px; margin-bottom: 15px; }
+        .time-setter input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+        .timeline-wrapper { position: relative; flex: 1; overflow-y: auto; }
+        #timeline-grid {
+            position: relative; /* ドラッグアイテムの基準 */
+            background-size: 100% 40px; /* 1時間 = 40px */
+            background-image: linear-gradient(to bottom, #e9ecef 1px, transparent 1px);
+        }
+        .time-marker { position: absolute; left: -50px; width: 40px; text-align: right; color: #888; font-size: 0.8em; }
+        .itinerary-item {
+            position: absolute;
+            left: 5px; right: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: white;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .itinerary-item.stay { background-color: #28a745; }
+        .itinerary-item.travel { background-color: #6c757d; }
 
-        /* --- 2. タグフィルター --- */
-        .tag-filter-section { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; background-color: #fff; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .tag-filter-section .tag { font-size: 0.9em; padding: 8px 15px; border-radius: 20px; background-color: #f1f3f5; cursor: pointer; transition: all 0.2s ease; user-select: none; }
-        .tag-filter-section .tag:hover { background-color: #e9ecef; }
-        .tag-filter-section .tag.active { background-color: #fd7e14; color: white; }
+        /* --- 中央パネル: 場所まとめ --- */
+        #places-panel { flex: 1; display: flex; flex-direction: column; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+        .genre-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .genre-btn, .fav-toggle-btn { padding: 10px; border: 1px solid #ccc; background-color: #f8f9fa; border-radius: 5px; cursor: pointer; text-align: center; }
+        .genre-btn.active { background-color: #007bff; color: white; }
+        .place-list-item { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; cursor: grab; }
+        .place-list-item:active { cursor: grabbing; }
+        .fav-btn { cursor: pointer; font-size: 1.5em; color: #ccc; }
+        .fav-btn.favorited { color: #ff4757; }
 
-        /* --- 3. 施設一覧 --- */
-        .facility-list-section { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .facility-card { background-color: #fff; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: grab; transition: box-shadow 0.2s ease; }
-        .facility-card:active { cursor: grabbing; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .facility-card h3 { margin: 0 0 10px 0; font-size: 1.2em; }
-        .facility-card .info { color: #555; font-size: 0.9em; }
-
-        /* --- 4. タイムラインバー --- */
-        .timeline-builder-section { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #e9ecef; padding: 15px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 100; }
-        .time-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 20px; }
-        .time-control { display: flex; align-items: center; gap: 10px; }
-        .time-control span { font-size: 1.2em; font-weight: bold; }
-        .time-control button { font-size: 1.5em; width: 30px; height: 30px; border: none; background-color: #ced4da; border-radius: 50%; cursor: pointer; }
+        /* --- 右パネル: 地図 --- */
+        #map-panel { flex-basis: 400px; display: flex; flex-direction: column; }
+        #map-placeholder { flex: 1; background: #e0e0e0 url(https://i.imgur.com/2YQY8qP.png) center/contain no-repeat; border-radius: 8px; position: relative; }
+        .map-pin { position: absolute; width: 20px; height: 20px; background: #dc3545; border-radius: 50%; border: 2px solid white; transform: translate(-50%, -50%); }
+        .map-pin.highlight { background: #ffc107; transform: translate(-50%, -50%) scale(1.5); }
         
-        .timeline-bar-wrapper { padding: 10px 0; }
-        #timeline-bar { display: flex; height: 60px; background-color: #adb5bd; border-radius: 8px; overflow: hidden; }
-        
-        .timeline-item { display: flex; justify-content: center; align-items: center; padding: 0 10px; color: white; font-size: 0.9em; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .timeline-item.facility { background-color: #28a745; }
-        .timeline-item.travel { background-color: #6c757d; font-size: 0.8em; }
-
+        /* --- ポップアップ/モーダル --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        .modal-content { background: white; padding: 25px; border-radius: 10px; max-width: 500px; }
     </style>
 </head>
 <body>
 
-    <header class="header">YOUR LOCALS - Itinerary Builder</header>
-
-    <div class="container">
-        <section class="start-point-section">
-            <h2>Where will you start your tour?</h2>
-            <div class="start-point-buttons">
-                <button data-station="shin-osaka">Shin-Osaka Station</button>
-                <button data-station="osaka-umeda">Osaka/Umeda Station</button>
-                <button data-station="kix">Kansai International Airport</button>
-                <button data-station="namba">Namba Station</button>
-                <button data-station="tennoji">Tennoji Station</button>
+    <main class="main-builder-container">
+        <section id="itinerary-panel" class="panel">
+            <h2 class="panel-title">Your Itinerary</h2>
+            <div class="time-setter">
+                <input type="time" id="start-time" value="09:00">
+                <input type="time" id="end-time" value="18:00">
+            </div>
+            <div class="timeline-wrapper">
+                <div id="timeline-grid"></div>
             </div>
         </section>
 
-        <div id="main-content" class="disabled-section">
-            <section class="tag-filter-section" id="tag-filters">
-                </section>
+        <section id="places-panel" class="panel">
+            <h2 class="panel-title">Find Places</h2>
+            <div class="genre-list"></div>
+            <button class="fav-toggle-btn">Show Favorites ❤️</button>
+            <div class="scrollable-content" id="place-list"></div>
+        </section>
 
-            <main class="facility-list-section" id="facility-list">
-                </main>
+        <section id="map-panel" class="panel">
+            <h2 class="panel-title">Map</h2>
+            <div id="map-placeholder"></div>
+        </section>
+    </main>
+
+    <div id="start-station-modal" class="modal-overlay visible">
+        <div class="modal-content">
+            <h3>Where are you starting from?</h3>
+            <p>Please select your starting station.</p>
+            <div class="genre-list" id="station-selection-buttons"></div>
         </div>
     </div>
     
-    <section id="timeline-section" class="timeline-builder-section disabled-section">
-        <div class="time-controls">
-            <div class="time-control" id="start-time-control">
-                <button class="time-adjust" data-type="start" data-change="-15">-</button>
-                <span>Start: <span id="start-time-display">09:00</span></span>
-                <button class="time-adjust" data-type="start" data-change="15">+</button>
-            </div>
-            <div class="time-control" id="end-time-control">
-                <button class="time-adjust" data-type="end" data-change="-15">-</button>
-                <span>End: <span id="end-time-display">18:00</span></span>
-                <button class="time-adjust" data-type="end" data-change="15">+</button>
-            </div>
-        </div>
-        <div class="timeline-bar-wrapper">
-            <div id="timeline-bar">
-                </div>
-        </div>
-    </section>
-
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-
         // --- データ（仮） ---
-        const allFacilities = [
-            { id: 1, name: 'Osaka Castle', duration: 90, station: 'osaka-castle', tags: ['history', 'sightseeing'], distance: { 'shin-osaka': 25, 'osaka-umeda': 15, 'kix': 60, 'namba': 20, 'tennoji': 10 } },
-            { id: 2, name: 'Dotonbori', duration: 120, station: 'namba', tags: ['food', 'nightlife', 'shopping'], distance: { 'shin-osaka': 20, 'osaka-umeda': 10, 'kix': 50, 'namba': 5, 'tennoji': 15 } },
-            { id: 3, name: 'Universal Studios Japan', duration: 480, station: 'usj', tags: ['amusement', 'family'], distance: { 'shin-osaka': 30, 'osaka-umeda': 20, 'kix': 70, 'namba': 25, 'tennoji': 30 } },
-            { id: 4, name: 'Shitennoji Temple', duration: 60, station: 'tennoji', tags: ['history', 'temple'], distance: { 'shin-osaka': 30, 'osaka-umeda': 20, 'kix': 45, 'namba': 15, 'tennoji': 5 } },
-            { id: 5, name: 'Umeda Sky Building', duration: 75, station: 'osaka-umeda', tags: ['sightseeing', 'modern'], distance: { 'shin-osaka': 10, 'osaka-umeda': 5, 'kix': 60, 'namba': 15, 'tennoji': 20 } },
-            { id: 6, name: 'Kuromon Market', duration: 90, station: 'namba', tags: ['food', 'shopping', 'market'], distance: { 'shin-osaka': 25, 'osaka-umeda': 15, 'kix': 55, 'namba': 10, 'tennoji': 15 } },
-        ];
-        const allTags = ['history', 'food', 'sightseeing', 'nightlife', 'shopping', 'amusement', 'family', 'temple', 'modern', 'market'];
-        const travelTimes = { // 駅間の移動時間（仮）
-            'osaka-castle-namba': 15, 'namba-osaka-castle': 15,
-            'namba-usj': 25, 'usj-namba': 25,
-            'osaka-umeda-tennoji': 20, 'tennoji-osaka-umeda': 20,
-            'osaka-castle-osaka-umeda': 15, 'osaka-umeda-osaka-castle': 15,
-            'tennoji-namba': 10, 'namba-tennoji': 10,
+        const DUMMY_DATA = {
+            places: [
+                { id: 1, name: "Dotonbori Glico Sign", genre: "sightseeing", station: "namba", stay: 30, desc: "A famous landmark in Osaka. Great for photos!", photo: "https://i.imgur.com/GplnmUI.jpeg" },
+                { id: 2, name: "Kuromon Market", genre: "food", station: "namba", stay: 90, desc: "Known as 'Osaka's Kitchen'. Enjoy fresh seafood and local snacks.", photo: "https://i.imgur.com/bK16H8S.png" },
+                { id: 3, name: "Osaka Castle", genre: "history", station: "osaka", stay: 120, desc: "A beautiful and historic castle with a museum inside.", photo: "https://i.imgur.com/8QWBHqf.png" },
+                { id: 4, name: "Shitennoji Temple", genre: "history", station: "tennoji", stay: 60, desc: "One of Japan's oldest temples, offering a peaceful atmosphere.", photo: "https://i.imgur.com/V98wG3J.png" },
+                { id: 5, name: "Umeda Sky Building", genre: "sightseeing", station: "osaka", stay: 75, desc: "Offers a stunning 360-degree view of the city from its floating garden observatory.", photo: "https://i.imgur.com/bK16H8S.png" }
+            ],
+            genres: ["sightseeing", "food", "history", "shopping"],
+            stations: {
+                "osaka": { name: "Osaka/Umeda Station", mapPos: { top: "30%", left: "40%" } },
+                "namba": { name: "Namba Station", mapPos: { top: "60%", left: "50%" } },
+                "tennoji": { name: "Tennoji Station", mapPos: { top: "80%", left: "65%" } }
+            },
+            travelTimes: { "osaka-namba": 15, "namba-tennoji": 10, "tennoji-osaka": 20 }
         };
 
         // --- DOM要素 ---
-        const startPointButtons = document.querySelector('.start-point-buttons');
-        const mainContent = document.getElementById('main-content');
-        const timelineSection = document.getElementById('timeline-section');
-        const tagContainer = document.getElementById('tag-filters');
-        const facilityList = document.getElementById('facility-list');
-        const timelineBar = document.getElementById('timeline-bar');
-        const timeControls = document.querySelector('.time-controls');
-        const startTimeDisplay = document.getElementById('start-time-display');
-        const endTimeDisplay = document.getElementById('end-time-display');
+        const itineraryPanel = document.getElementById("itinerary-panel");
+        const timelineGrid = document.getElementById("timeline-grid");
+        const placesPanel = document.getElementById("places-panel");
+        const genreList = document.querySelector(".genre-list");
+        const placeList = document.getElementById("place-list");
+        const favToggleButton = document.querySelector(".fav-toggle-btn");
+        const stationModal = document.getElementById("start-station-modal");
+        const stationSelectionButtons = document.getElementById("station-selection-buttons");
         
-        let selectedStartStation = null;
-        let selectedTags = [];
-        let itinerary = []; // { type: 'facility'/'travel', duration, ... }
-        let startTime = 9 * 60; // 09:00 in minutes
-        let endTime = 18 * 60; // 18:00 in minutes
+        let state = {
+            startStation: null,
+            favorites: [],
+            itinerary: [],
+            startTime: 9 * 60,
+            endTime: 18 * 60,
+            currentFilter: { type: 'genre', value: null }
+        };
 
-        // --- 初期化処理 ---
-
-        // タグを生成
-        allTags.forEach(tag => {
-            const tagEl = document.createElement('span');
-            tagEl.className = 'tag';
-            tagEl.textContent = `#${tag}`;
-            tagEl.dataset.tag = tag;
-            tagContainer.appendChild(tagEl);
-        });
-
-        // --- 関数 ---
-        
-        function renderFacilities() {
-            facilityList.innerHTML = '';
-            const filteredFacilities = allFacilities.filter(f => 
-                selectedTags.length === 0 || f.tags.some(t => selectedTags.includes(t))
-            );
-
-            filteredFacilities.forEach(facility => {
-                const card = document.createElement('div');
-                card.className = 'facility-card';
-                card.draggable = true;
-                card.dataset.id = facility.id;
-                card.innerHTML = `
-                    <h3>${facility.name}</h3>
-                    <div class="info">
-                        <span>Stay: ${facility.duration} min</span> | 
-                        <span>Dist: Approx. ${facility.distance[selectedStartStation]} min</span>
-                    </div>
-                `;
-                facilityList.appendChild(card);
+        // --- Functions ---
+        const renderStationSelection = () => {
+            Object.keys(DUMMY_DATA.stations).forEach(key => {
+                const btn = document.createElement("button");
+                btn.className = "genre-btn";
+                btn.textContent = DUMMY_DATA.stations[key].name;
+                btn.onclick = () => selectStartStation(key);
+                stationSelectionButtons.appendChild(btn);
             });
-        }
+        };
 
-        function updateTimeline() {
-            timelineBar.innerHTML = '';
-            let totalDuration = 0;
-            itinerary.forEach(item => totalDuration += item.duration);
+        const selectStartStation = (stationKey) => {
+            state.startStation = stationKey;
+            stationModal.classList.remove("visible");
+            renderGenres();
+            renderPlaces();
+        };
 
-            itinerary.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = `timeline-item ${item.type}`;
-                itemEl.style.flexGrow = item.duration; // flex-growで比率を表現
-                itemEl.textContent = item.type === 'facility' ? item.name : `${item.duration} min travel`;
-                timelineBar.appendChild(itemEl);
+        const renderGenres = () => {
+            genreList.innerHTML = '';
+            DUMMY_DATA.genres.forEach(genre => {
+                const btn = document.createElement("button");
+                btn.className = "genre-btn";
+                btn.textContent = genre;
+                btn.onclick = () => {
+                    state.currentFilter = { type: 'genre', value: genre };
+                    renderPlaces();
+                };
+                genreList.appendChild(btn);
             });
-            updateTimeProportions();
-        }
-
-        function updateTimeProportions() {
-            const totalMinutes = endTime - startTime;
-            let totalItineraryMinutes = 0;
-            itinerary.forEach(item => totalItineraryMinutes += item.duration);
-
-            const scale = totalMinutes / totalItineraryMinutes;
-
-            // この例ではflex-growで比率を表現しているため、時間変更で全体の幅が変わるわけではない
-            // より複雑なUI（例：ピクセル単位での表示）ではここでの計算が必要になる
-        }
+        };
         
-        function formatTime(minutes) {
-            const h = Math.floor(minutes / 60).toString().padStart(2, '0');
-            const m = (minutes % 60).toString().padStart(2, '0');
-            return `${h}:${m}`;
-        }
-
-        // --- イベントリスナー ---
-
-        // 1. 出発地点選択
-        startPointButtons.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') {
-                document.querySelectorAll('.start-point-buttons button').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-                selectedStartStation = e.target.dataset.station;
-                
-                // 他のセクションを有効化
-                mainContent.classList.remove('disabled-section');
-                timelineSection.classList.remove('disabled-section');
-                
-                renderFacilities();
+        const renderPlaces = () => {
+            placeList.innerHTML = '';
+            let placesToRender = [];
+            if (state.currentFilter.type === 'favorites') {
+                placesToRender = DUMMY_DATA.places.filter(p => state.favorites.includes(p.id));
+            } else if (state.currentFilter.type === 'genre' && state.currentFilter.value) {
+                placesToRender = DUMMY_DATA.places.filter(p => p.genre === state.currentFilter.value);
+            } else {
+                placesToRender = DUMMY_DATA.places;
             }
-        });
-
-        // 2. タグ選択
-        tagContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('tag')) {
-                e.target.classList.toggle('active');
-                const tag = e.target.dataset.tag;
-                if (selectedTags.includes(tag)) {
-                    selectedTags = selectedTags.filter(t => t !== tag);
-                } else {
-                    selectedTags.push(tag);
-                }
-                renderFacilities();
-            }
-        });
-
-        // 3. ドラッグ＆ドロップ
-        facilityList.addEventListener('dragstart', (e) => {
-            if (e.target.classList.contains('facility-card')) {
-                e.dataTransfer.setData('text/plain', e.target.dataset.id);
-            }
-        });
-
-        timelineBar.addEventListener('dragover', (e) => {
-            e.preventDefault(); // ドロップを許可
-        });
-
-        timelineBar.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const facilityId = e.dataTransfer.getData('text/plain');
-            const facility = allFacilities.find(f => f.id == facilityId);
             
-            if (facility) {
-                // 移動時間を計算
-                if (itinerary.length > 0) {
-                    const lastFacility = itinerary[itinerary.length - 1];
-                    const travelKey = `${lastFacility.station}-${facility.station}`;
-                    const travelDuration = travelTimes[travelKey] || 15; // 仮のデフォルト移動時間
-                    itinerary.push({ type: 'travel', duration: travelDuration });
-                }
-                // 施設を追加
-                itinerary.push({ type: 'facility', ...facility });
-                updateTimeline();
-            }
-        });
-        
-        // 4. 時間調整
-        timeControls.addEventListener('click', (e) => {
-             if (e.target.classList.contains('time-adjust')) {
-                 const { type, change } = e.target.dataset;
-                 if (type === 'start') {
-                     startTime += parseInt(change);
-                 } else {
-                     endTime += parseInt(change);
-                 }
-                 //終了時間が開始時間より早くならないように制御
-                 if(endTime <= startTime) {
-                     if (type === 'start') startTime -= parseInt(change);
-                     else endTime -= parseInt(change);
-                     return;
-                 }
-                 startTimeDisplay.textContent = formatTime(startTime);
-                 endTimeDisplay.textContent = formatTime(endTime);
-                 updateTimeProportions();
-             }
-        });
+            placesToRender.forEach(place => {
+                const item = document.createElement("div");
+                item.className = "place-list-item";
+                item.draggable = true;
+                item.dataset.placeId = place.id;
+                item.ondragstart = (e) => e.dataTransfer.setData("text/plain", place.id);
 
+                const name = document.createElement("span");
+                name.textContent = place.name;
+                
+                const favBtn = document.createElement("span");
+                favBtn.className = "fav-btn";
+                favBtn.innerHTML = "❤️";
+                if(state.favorites.includes(place.id)) favBtn.classList.add("favorited");
+                favBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(place.id);
+                };
+                
+                item.appendChild(name);
+                item.appendChild(favBtn);
+                placeList.appendChild(item);
+            });
+        };
+        
+        const toggleFavorite = (placeId) => {
+            const index = state.favorites.indexOf(placeId);
+            if (index > -1) state.favorites.splice(index, 1);
+            else state.favorites.push(placeId);
+            renderPlaces(); // Re-render to update heart icon
+        };
+
+        const renderItinerary = () => {
+            timelineGrid.innerHTML = '';
+            const totalMinutes = state.endTime - state.startTime;
+            const hourHeight = 80; // 1時間あたりのピクセル高さ
+            timelineGrid.style.height = `${(totalMinutes / 60) * hourHeight}px`;
+
+            // 時間メモリを生成 (15分刻み)
+            for(let i = 0; i <= totalMinutes; i += 60) {
+                 const timeMarker = document.createElement('div');
+                 timeMarker.className = 'time-marker';
+                 timeMarker.textContent = `${(state.startTime + i) / 60}:00`;
+                 timeMarker.style.top = `${(i / 60) * hourHeight - 10}px`;
+                 timelineGrid.appendChild(timeMarker);
+            }
+            
+            let currentTime = state.startTime;
+            state.itinerary.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = `itinerary-item ${item.type}`;
+                itemEl.textContent = item.name || `${item.duration} min travel`;
+                itemEl.style.top = `${((currentTime - state.startTime) / 60) * hourHeight}px`;
+                itemEl.style.height = `${(item.duration / 60) * hourHeight}px`;
+                timelineGrid.appendChild(itemEl);
+                currentTime += item.duration;
+            });
+        };
+
+        // --- Event Listeners ---
+        favToggleButton.onclick = () => {
+            state.currentFilter = { type: 'favorites' };
+            renderPlaces();
+        };
+        
+        itineraryPanel.ondragover = (e) => e.preventDefault();
+        itineraryPanel.ondrop = (e) => {
+            e.preventDefault();
+            const placeId = parseInt(e.dataTransfer.getData("text/plain"));
+            const place = DUMMY_DATA.places.find(p => p.id === placeId);
+            
+            if(place) {
+                // 移動時間を追加
+                if(state.itinerary.length > 0){
+                    const lastPlace = DUMMY_DATA.places.find(p => p.id === state.itinerary[state.itinerary.length - 1].id);
+                    const travelKey = `${lastPlace.station}-${place.station}`;
+                    const revTravelKey = `${place.station}-${lastPlace.station}`;
+                    const travelTime = DUMMY_DATA.travelTimes[travelKey] || DUMMY_DATA.travelTimes[revTravelKey] || 15;
+                    state.itinerary.push({ id: `travel-${Date.now()}`, type: 'travel', duration: travelTime });
+                }
+                state.itinerary.push({ ...place, type: 'stay' });
+                renderItinerary();
+            }
+        };
+        
+        document.getElementById('start-time').onchange = (e) => {
+            const [h, m] = e.target.value.split(':');
+            state.startTime = parseInt(h) * 60 + parseInt(m);
+            renderItinerary();
+        };
+        document.getElementById('end-time').onchange = (e) => {
+            const [h, m] = e.target.value.split(':');
+            state.endTime = parseInt(h) * 60 + parseInt(m);
+            renderItinerary();
+        };
+        
+        // --- 初期化 ---
+        renderStationSelection();
+        renderItinerary();
     });
     </script>
 </body>
